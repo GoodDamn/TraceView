@@ -131,7 +131,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 //mStartX = motionEvent.getX();
                 //mStartY = motionEvent.getY();
 
-                Log.d(TAG, "onTouch: STICK_X: " + mStickX + " STICK_Y: " + mStickY);
+
 
                 if (mStickX-20 < x && x < mStickX+20 &&
                     mStickY-20 < y && y < mStickY+20) {
@@ -151,7 +151,16 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
                 Log.d(TAG, "onTouch: DELTA_X: " + mDeltaX + " DELTA_Y: " + mDeltaY);
 
-                if (Math.abs(x-mDeltaX) < 12 && Math.abs(y-mDeltaY) < 12) {
+                /*double rad = Math.toRadians(35);
+                float cos = (float) Math.cos(rad);
+                float sin = (float) Math.sin(rad);*/
+
+                mStickX = x;
+                mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY-mMarStartY);
+                //mStickY = y + mLenAngled;
+                Log.d(TAG, "onTouch: STICK_X: " + mStickX + " STICK_Y: " + mStickY);
+
+                /*if (Math.abs(x-mDeltaX) < 12 && Math.abs(y-mDeltaY) < 12) {
                     mStickX = x;
                     mStickY = y;
                 } else {
@@ -159,7 +168,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 }
 
                 mDeltaX = x;
-                mDeltaY = y;
+                mDeltaY = y;*/
 
                 invalidate();
                 break;
