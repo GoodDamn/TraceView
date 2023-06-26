@@ -50,6 +50,8 @@ public class MarqueeView extends View implements View.OnTouchListener {
         mPaintDebug.setColor(0xffffff00);
 
         mPaintStick.setColor(0xff00ff59);
+        mPaintStick.setStrokeWidth(strokeWidth);
+        mPaintStick.setStrokeCap(Paint.Cap.ROUND);
 
         setOnTouchListener(this);
     }
@@ -96,6 +98,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 mMarEndY+mLenAngled,
                 mPaintDebug);
 
+        canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintStick);
         canvas.drawCircle(mStickX,mStickY, mPaintInteract.getStrokeWidth(), mPaintStick);
 
         //canvas.drawLine(mStartX, mStartY, mEndX, mEndY, mPaintInteract);
