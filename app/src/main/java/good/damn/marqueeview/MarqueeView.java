@@ -27,13 +27,12 @@ public class MarqueeView extends View implements View.OnTouchListener {
     private float mStickX = 0;
     private float mStickY = 0;
 
-    private float mAngle = 0;
+    //private float mLenAngled = 5;
 
-    private float mLenAngled = 5;
+    private final int mLenBound = 50;
 
     private final int mStickBound = 50;
 
-    private final int mLenBound = 50;
 
     private void init() {
         float strokeWidth = mLenBound * 0.2f;
@@ -71,7 +70,6 @@ public class MarqueeView extends View implements View.OnTouchListener {
         init();
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -84,7 +82,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 mMarEndY,
                 mPaint);
 
-        canvas.drawLine( // right
+        /*canvas.drawLine( // right
                 mMarStartX+mLenAngled,
                 mMarStartY-mLenAngled,
                 mMarEndX+mLenAngled,
@@ -96,7 +94,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 mMarStartY+mLenAngled,
                 mMarEndX-mLenAngled,
                 mMarEndY+mLenAngled,
-                mPaintDebug);
+                mPaintDebug);*/
 
         canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintStick);
         canvas.drawCircle(mStickX,mStickY, mPaintInteract.getStrokeWidth(), mPaintStick);
@@ -113,15 +111,15 @@ public class MarqueeView extends View implements View.OnTouchListener {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        mMarStartX = getWidth() * 0.15f;
+        mMarStartX = getWidth() * 0.35f;
         mMarStartY = getHeight() * 0.15f;
 
         mMarEndX = getWidth() * 0.85f;
         mMarEndY = getHeight() * 0.85f;
 
         // Calculate angle
-        mAngle = (mMarEndX - mMarStartX) / (mMarEndY - mMarStartY);
-        mLenAngled = mLenBound * mAngle;
+        /*mAngle = (mMarEndX - mMarStartX) / (mMarEndY - mMarStartY);
+        mLenAngled = mLenBound * mAngle;*/
 
         mStickX = mMarStartX;
         mStickY = mMarStartY;
@@ -153,14 +151,27 @@ public class MarqueeView extends View implements View.OnTouchListener {
                     mStickY-mStickBound < y && y < mStickY+mStickBound) {
 
                     mStickX = x;
-                    mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY-mMarStartY);
+                    mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY - mMarStartY);
 
-                    if (x < mMarStartX) {
-                        mStickX = mMarStartX;
-                        mStickY = mMarStartY;
-                    } else if (x > mMarEndX) {
-                        mStickX = mMarEndX;
-                        mStickY = mMarEndY;
+                    if (mMarStartX < mMarEndX) {
+
+                        if (x < mMarStartX) {
+                            mStickX = mMarStartX;
+                            mStickY = mMarStartY;
+                        } else if (x > mMarEndX) {
+                            mStickX = mMarEndX;
+                            mStickY = mMarEndY;
+                        }
+
+                    } else {
+
+                        if (x < mMarEndX) {
+                            mStickX = mMarEndX;
+                            mStickY = mMarEndY;
+                        } else if (x > mMarStartX) {
+                            mStickX = mMarStartX;
+                            mStickY = mMarStartY;
+                        }
                     }
                 } else {
                     return false;
