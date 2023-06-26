@@ -19,9 +19,6 @@ public class MarqueeView extends View implements View.OnTouchListener {
     private final Paint mPaintDebug = new Paint();
     private final Paint mPaintStick = new Paint();
 
-    private float mDeltaX = 0;
-    private float mDeltaY = 0;
-
     private float mMarStartX = 0;
     private float mMarStartY = 0;
     private float mMarEndX = 1;
@@ -33,6 +30,8 @@ public class MarqueeView extends View implements View.OnTouchListener {
     private float mAngle = 0;
 
     private float mLenAngled = 5;
+
+    private final int mStickBound = 50;
 
     private final int mLenBound = 50;
 
@@ -48,6 +47,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
         mPaintInteract.setStrokeCap(Paint.Cap.ROUND);
 
         mPaintDebug.setColor(0xffffff00);
+        mPaintDebug.setStyle(Paint.Style.STROKE);
 
         mPaintStick.setColor(0xff00ff59);
         mPaintStick.setStrokeWidth(strokeWidth);
@@ -101,6 +101,12 @@ public class MarqueeView extends View implements View.OnTouchListener {
         canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintStick);
         canvas.drawCircle(mStickX,mStickY, mPaintInteract.getStrokeWidth(), mPaintStick);
 
+        canvas.drawRect(mStickX-mStickBound,
+                mStickY-mStickBound,
+                mStickX+mStickBound,
+                mStickY+mStickBound,
+                mPaintDebug);
+
         //canvas.drawLine(mStartX, mStartY, mEndX, mEndY, mPaintInteract);
     }
 
@@ -128,54 +134,37 @@ public class MarqueeView extends View implements View.OnTouchListener {
         float y = motionEvent.getY();
 
         Log.d(TAG, "onTouch: X: " + x + " Y: " + y);
+        Log.d(TAG, "onTouch: STICK_X: " + mStickX + " STICK_Y: " + mStickY);
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //mStartX = motionEvent.getX();
-                //mStartY = motionEvent.getY();
 
-
-
-                if (mStickX-20 < x && x < mStickX+20 &&
-                    mStickY-20 < y && y < mStickY+20) {
+                if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
+                    mStickY-mStickBound < y && y < mStickY+mStickBound) {
                     Log.d(TAG, "onTouch: INSIDE_STICK_BOUND");
                 } else {
                     return false;
                 }
 
-
-                mDeltaX = motionEvent.getX();
-                mDeltaY = motionEvent.getY();
-
                 break;
             case MotionEvent.ACTION_MOVE:
-                //mEndX = motionEvent.getX();
-                //mEndY = motionEvent.getY();
 
-                Log.d(TAG, "onTouch: DELTA_X: " + mDeltaX + " DELTA_Y: " + mDeltaY);
+                if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
+                    mStickY-mStickBound < y && y < mStickY+mStickBound) {
 
-                mStickX = x;
-                mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY-mMarStartY);
-
-                if (x < mMarStartX) {
-                    mStickX = mMarStartX;
-                    mStickY = mMarStartY;
-                } else if (x > mMarEndX) {
-                    mStickX = mMarEndX;
-                    mStickY = mMarEndY;
-                }
-
-                Log.d(TAG, "onTouch: STICK_X: " + mStickX + " STICK_Y: " + mStickY);
-
-                /*if (Math.abs(x-mDeltaX) < 12 && Math.abs(y-mDeltaY) < 12) {
                     mStickX = x;
-                    mStickY = y;
+                    mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY-mMarStartY);
+
+                    if (x < mMarStartX) {
+                        mStickX = mMarStartX;
+                        mStickY = mMarStartY;
+                    } else if (x > mMarEndX) {
+                        mStickX = mMarEndX;
+                        mStickY = mMarEndY;
+                    }
                 } else {
                     return false;
                 }
-
-                mDeltaX = x;
-                mDeltaY = y;*/
 
                 invalidate();
                 break;
