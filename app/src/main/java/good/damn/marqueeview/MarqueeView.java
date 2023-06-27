@@ -75,6 +75,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
         mStickY = mMarStartY;
     }
 
+
     public MarqueeView(Context context) {
         super(context);
         init();
@@ -167,7 +168,6 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
                 break;
             case MotionEvent.ACTION_MOVE:
-
                 if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
                     mStickY-mStickBound < y && y < mStickY+mStickBound) {
 
@@ -177,46 +177,53 @@ public class MarqueeView extends View implements View.OnTouchListener {
                     if (yAbs < xAbs) {
                         mStickX = x;
                         mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY - mMarStartY);
-                    } else {
-                        mStickX = mMarStartX + (y - mMarStartY) / (mMarEndY - mMarStartY) * (mMarEndX - mMarStartX);
-                        mStickY = y;
+
+                        if (mMarStartX < mMarEndX) {
+                            if (x < mMarStartX) {
+                                mStickX = mMarStartX;
+                                mStickY = mMarStartY;
+                            } else if (x > mMarEndX) {
+                                mStickX = mMarEndX;
+                                mStickY = mMarEndY;
+                            }
+                        } else {
+                            if (x < mMarEndX) {
+                                mStickX = mMarEndX;
+                                mStickY = mMarEndY;
+                            } else if (x > mMarStartX) {
+                                mStickX = mMarStartX;
+                                mStickY = mMarStartY;
+                            }
+                        }
+                        invalidate();
+                        break;
                     }
 
-                    /*// Check collision
-                    if (mMarStartX < mMarEndX) {
-                        if (x < mMarStartX) {
-                            mStickX = mMarStartX;
-                        } else if (x > mMarEndX) {
-                            mStickX = mMarEndX;
-                        }
-                    } else {
-                        if (x < mMarEndX) {
-                            mStickX = mMarEndX;
-                        } else if (x > mMarStartX) {
-                            mStickX = mMarStartX;
-                        }
-                    }
-
+                    mStickX = mMarStartX + (y - mMarStartY) / (mMarEndY - mMarStartY) * (mMarEndX - mMarStartX);
+                    mStickY = y;
                     if (mMarStartY < mMarEndY) {
                         if (y < mMarStartY) {
+                            mStickX = mMarStartX;
                             mStickY = mMarStartY;
                         } else if (y > mMarEndY) {
+                            mStickX = mMarEndX;
                             mStickY = mMarEndY;
                         }
                     } else {
                         if (y < mMarEndY) {
+                            mStickX = mMarEndX;
                             mStickY = mMarEndY;
                         } else if (y > mMarStartY) {
+                            mStickX = mMarStartX;
                             mStickY = mMarStartY;
                         }
-                    }*/
+                    }
 
-                } else {
-                    return false;
+
+                    invalidate();
+                    break;
                 }
-
-                invalidate();
-                break;
+                return false;
         }
 
         return true;
