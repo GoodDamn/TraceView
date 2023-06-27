@@ -22,7 +22,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
     private void init() {
 
-        mLines = new Line[25];
+        mLines = new Line[10];
 
         for (byte i = 0; i < mLines.length;i++) {
             mLines[i] = new Line();
@@ -58,9 +58,25 @@ public class MarqueeView extends View implements View.OnTouchListener {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        for (Line mLine : mLines) {
-            mLine.onLayout(getWidth(), getHeight());
-        }
+        mLines[0].onLayout(getWidth(), getHeight(), 0.1f,0.3f,0.9f, 0.3f);
+
+        // upper-triangle
+        mLines[1].onLayout(getWidth(), getHeight(), 0.5f,0.1f,0.3f, 0.3f);
+        mLines[2].onLayout(getWidth(), getHeight(), 0.5f,0.15f,0.7f, 0.3f);
+
+        // lower triangle
+        mLines[3].onLayout(getWidth(), getHeight(), 0.3f,0.3f,0.5f, 0.5f);
+        mLines[4].onLayout(getWidth(), getHeight(), 0.5f,0.8f,0.5f, 0.5f);
+        mLines[5].onLayout(getWidth(), getHeight(), 0.5f,0.5f,0.7f, 0.3f);
+
+        // right side of triangle
+        mLines[6].onLayout(getWidth(), getHeight(), 0.8f,0.5f,0.6f, 0.4f);
+        mLines[7].onLayout(getWidth(), getHeight(), 0.8f,0.95f,0.8f, 0.5f);
+
+        // left side of triangle
+        mLines[8].onLayout(getWidth(), getHeight(), 0.2f,0.95f,0.2f, 0.5f);
+        mLines[9].onLayout(getWidth(), getHeight(), 0.2f,0.5f,0.4f, 0.4f);
+
     }
 
     @Override
@@ -72,12 +88,6 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
-                /*if (x < 50) {
-                    Log.d(TAG, "onTouch: LINE WITH RANDOM POSITION");
-                    onLayout(mWidth, mHeight);
-                    return DRAW_INVALIDATE_WITH_FALSE;
-                }*/
 
                 for (Line mLine : mLines) {
                     if (mLine.checkCollide(x,y)) {

@@ -15,6 +15,8 @@ public class Line {
     public static final byte DRAW_FALSE = 1;
     public static final byte DRAW_TRUE = 2;
 
+    private static final boolean DEBUG_MODE = false;
+
     private final Random mRandom = new Random();
 
     private final Paint mPaintForeground = new Paint();
@@ -63,27 +65,38 @@ public class Line {
         float x = mStickX - mStickBound;
         float y = mStickY - mStickBound;
 
-        canvas.drawRect(x,y,
-                mStickX+mStickBound,
-                mStickY+mStickBound,
-                mPaintDebug);
+        if (DEBUG_MODE) {
+            canvas.drawRect(x, y,
+                    mStickX + mStickBound,
+                    mStickY + mStickBound,
+                    mPaintDebug);
 
-        canvas.drawText("Y: " + y, x,y-mPaintDebug.getTextSize(),mPaintDebug);
-        canvas.drawText("X: " + x, x,y-mPaintDebug.getTextSize()*2,mPaintDebug);
+            canvas.drawText("Y: " + y, x, y - mPaintDebug.getTextSize(), mPaintDebug);
+            canvas.drawText("X: " + x, x, y - mPaintDebug.getTextSize() * 2, mPaintDebug);
+        }
     }
 
-    public void onLayout(int width, int height) {
+    public void onLayout(int width, int height,
+                         float startX, float startY,
+                         float endX, float endY) {
+        Log.d(TAG, "onLayout: Line::onLayout();");
         mWidth = width;
         mHeight = height;
 
-        mMarStartX = width * mRandom.nextFloat();
-        mMarStartY = height * mRandom.nextFloat();
+        mMarStartX = width * startX;
+        mMarStartY = height * startY;
 
-        mMarEndX = width * mRandom.nextFloat();
-        mMarEndY = height * mRandom.nextFloat();
+        mMarEndX = width * endX;
+        mMarEndY = height * endY;
 
         mStickX = mMarStartX;
         mStickY = mMarStartY;
+    }
+
+    public void onLayout(int width, int height) {
+        onLayout(width,height,
+                mRandom.nextFloat(), mRandom.nextFloat(),
+                mRandom.nextFloat(), mRandom.nextFloat());
         Log.d(TAG, "onLayout: Line::onLayout();");
     }
 
