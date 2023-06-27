@@ -16,63 +16,19 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
 
-    private final Random mRandom = new Random();
+    private Line[] mLines;
 
-    private final Paint mPaint = new Paint();
-    private final Paint mPaintInteract = new Paint();
-    private final Paint mPaintDebug = new Paint();
-    private final Paint mPaintStick = new Paint();
-
-    private float mMarStartX = 0;
-    private float mMarStartY = 0;
-    private float mMarEndX = 1;
-    private float mMarEndY = 0;
-
-    private float mStickX = 0;
-    private float mStickY = 0;
-
-    //private float mLenAngled = 5;
-
-    private final int mLenBound = 50;
-
-    private final int mStickBound = 50;
-
+    private Line mCurrentLineTouching;
 
     private void init() {
-        float strokeWidth = mLenBound * 0.2f;
 
-        mPaint.setColor(0x55ffffff);
-        mPaint.setStrokeWidth(strokeWidth);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mLines = new Line[25];
 
-        mPaintInteract.setColor(0xffffffff);
-        mPaintInteract.setStrokeWidth(strokeWidth);
-        mPaintInteract.setStrokeCap(Paint.Cap.ROUND);
-
-        mPaintDebug.setColor(0xffffff00);
-        mPaintDebug.setStyle(Paint.Style.STROKE);
-        mPaintDebug.setTextSize(15.0f);
-
-        mPaintStick.setColor(0xff00ff59);
-        mPaintStick.setStrokeWidth(strokeWidth);
-        mPaintStick.setStrokeCap(Paint.Cap.ROUND);
+        for (byte i = 0; i < mLines.length;i++) {
+            mLines[i] = new Line();
+        }
 
         setOnTouchListener(this);
-    }
-
-    private void randomPosition() {
-        mMarStartX = getWidth() * mRandom.nextFloat();
-        mMarStartY = getHeight() * mRandom.nextFloat();
-
-        mMarEndX = getWidth() * mRandom.nextFloat();
-        mMarEndY = getHeight() * mRandom.nextFloat();
-
-        // Calculate angle
-        /*mAngle = (mMarEndX - mMarStartX) / (mMarEndY - mMarStartY);
-        mLenAngled = mLenBound * mAngle;*/
-
-        mStickX = mMarStartX;
-        mStickY = mMarStartY;
     }
 
 
@@ -94,136 +50,54 @@ public class MarqueeView extends View implements View.OnTouchListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        // Background line
-        canvas.drawLine(
-                mMarStartX,
-                mMarStartY,
-                mMarEndX,
-                mMarEndY,
-                mPaint);
-
-        /*canvas.drawLine( // right
-                mMarStartX+mLenAngled,
-                mMarStartY-mLenAngled,
-                mMarEndX+mLenAngled,
-                mMarEndY-mLenAngled,
-                mPaintDebug);
-
-        canvas.drawLine( // left
-                mMarStartX-mLenAngled,
-                mMarStartY+mLenAngled,
-                mMarEndX-mLenAngled,
-                mMarEndY+mLenAngled,
-                mPaintDebug);*/
-
-        canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintStick);
-        canvas.drawCircle(mStickX,mStickY, mPaintInteract.getStrokeWidth(), mPaintStick);
-
-        float x = mStickX - mStickBound;
-        float y = mStickY - mStickBound;
-
-        canvas.drawRect(x,y,
-                mStickX+mStickBound,
-                mStickY+mStickBound,
-                mPaintDebug);
-
-        canvas.drawText("Y: " + y, x,y-mPaintDebug.getTextSize(),mPaintDebug);
-        canvas.drawText("X: " + x, x,y-mPaintDebug.getTextSize()*2,mPaintDebug);
-
-        //canvas.drawLine(mStartX, mStartY, mEndX, mEndY, mPaintInteract);
+        for (Line mLine : mLines) {
+            mLine.onDraw(canvas);
+        }
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        randomPosition();
+        for (Line mLine : mLines) {
+            mLine.onLayout(getWidth(), getHeight());
+        }
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-
         float x = motionEvent.getX();
         float y = motionEvent.getY();
 
         Log.d(TAG, "onTouch: X: " + x + " Y: " + y);
-        Log.d(TAG, "onTouch: STICK_X: " + mStickX + " STICK_Y: " + mStickY);
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
-                if (x < 50) {
+                /*if (x < 50) {
                     Log.d(TAG, "onTouch: LINE WITH RANDOM POSITION");
-                    randomPosition();
+                    onLayout(mWidth, mHeight);
+                    return DRAW_INVALIDATE_WITH_FALSE;
+                }*/
+
+                for (Line mLine : mLines) {
+                    if (mLine.checkCollide(x,y)) {
+                        mCurrentLineTouching = mLine;
+                        break;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                byte state = mCurrentLineTouching.onTouch(x,y);
+                if (state == Line.DRAW_INVALIDATE_WITH_FALSE) {
                     invalidate();
                     return false;
                 }
 
-                if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
-                    mStickY-mStickBound < y && y < mStickY+mStickBound) {
-                    Log.d(TAG, "onTouch: INSIDE_STICK_BOUND");
-                } else {
+                if (state == Line.DRAW_FALSE) {
                     return false;
                 }
 
                 break;
-            case MotionEvent.ACTION_MOVE:
-                if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
-                    mStickY-mStickBound < y && y < mStickY+mStickBound) {
-
-                    float xAbs = Math.abs(mMarStartX-mMarEndX);
-                    float yAbs = Math.abs(mMarStartY-mMarEndY);
-
-                    if (yAbs < xAbs) {
-                        mStickX = x;
-                        mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY - mMarStartY);
-
-                        if (mMarStartX < mMarEndX) {
-                            if (x < mMarStartX) {
-                                mStickX = mMarStartX;
-                                mStickY = mMarStartY;
-                            } else if (x > mMarEndX) {
-                                mStickX = mMarEndX;
-                                mStickY = mMarEndY;
-                            }
-                        } else {
-                            if (x < mMarEndX) {
-                                mStickX = mMarEndX;
-                                mStickY = mMarEndY;
-                            } else if (x > mMarStartX) {
-                                mStickX = mMarStartX;
-                                mStickY = mMarStartY;
-                            }
-                        }
-                        invalidate();
-                        break;
-                    }
-
-                    mStickX = mMarStartX + (y - mMarStartY) / (mMarEndY - mMarStartY) * (mMarEndX - mMarStartX);
-                    mStickY = y;
-                    if (mMarStartY < mMarEndY) {
-                        if (y < mMarStartY) {
-                            mStickX = mMarStartX;
-                            mStickY = mMarStartY;
-                        } else if (y > mMarEndY) {
-                            mStickX = mMarEndX;
-                            mStickY = mMarEndY;
-                        }
-                    } else {
-                        if (y < mMarEndY) {
-                            mStickX = mMarEndX;
-                            mStickY = mMarEndY;
-                        } else if (y > mMarStartY) {
-                            mStickX = mMarStartX;
-                            mStickY = mMarStartY;
-                        }
-                    }
-
-
-                    invalidate();
-                    break;
-                }
-                return false;
         }
 
         return true;
