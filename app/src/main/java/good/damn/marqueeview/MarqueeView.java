@@ -10,9 +10,13 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import java.util.Random;
+
 public class MarqueeView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
+
+    private final Random mRandom = new Random();
 
     private final Paint mPaint = new Paint();
     private final Paint mPaintInteract = new Paint();
@@ -47,12 +51,28 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
         mPaintDebug.setColor(0xffffff00);
         mPaintDebug.setStyle(Paint.Style.STROKE);
+        mPaintDebug.setTextSize(15.0f);
 
         mPaintStick.setColor(0xff00ff59);
         mPaintStick.setStrokeWidth(strokeWidth);
         mPaintStick.setStrokeCap(Paint.Cap.ROUND);
 
         setOnTouchListener(this);
+    }
+
+    private void randomPosition() {
+        mMarStartX = getWidth() * mRandom.nextFloat();
+        mMarStartY = getHeight() * mRandom.nextFloat();
+
+        mMarEndX = getWidth() * mRandom.nextFloat();
+        mMarEndY = getHeight() * mRandom.nextFloat();
+
+        // Calculate angle
+        /*mAngle = (mMarEndX - mMarStartX) / (mMarEndY - mMarStartY);
+        mLenAngled = mLenBound * mAngle;*/
+
+        mStickX = mMarStartX;
+        mStickY = mMarStartY;
     }
 
     public MarqueeView(Context context) {
@@ -99,11 +119,16 @@ public class MarqueeView extends View implements View.OnTouchListener {
         canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintStick);
         canvas.drawCircle(mStickX,mStickY, mPaintInteract.getStrokeWidth(), mPaintStick);
 
-        canvas.drawRect(mStickX-mStickBound,
-                mStickY-mStickBound,
+        float x = mStickX - mStickBound;
+        float y = mStickY - mStickBound;
+
+        canvas.drawRect(x,y,
                 mStickX+mStickBound,
                 mStickY+mStickBound,
                 mPaintDebug);
+
+        canvas.drawText("Y: " + y, x,y-mPaintDebug.getTextSize(),mPaintDebug);
+        canvas.drawText("X: " + x, x,y-mPaintDebug.getTextSize()*2,mPaintDebug);
 
         //canvas.drawLine(mStartX, mStartY, mEndX, mEndY, mPaintInteract);
     }
@@ -111,18 +136,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        mMarStartX = getWidth() * 0.35f;
-        mMarStartY = getHeight() * 0.15f;
-
-        mMarEndX = getWidth() * 0.85f;
-        mMarEndY = getHeight() * 0.85f;
-
-        // Calculate angle
-        /*mAngle = (mMarEndX - mMarStartX) / (mMarEndY - mMarStartY);
-        mLenAngled = mLenBound * mAngle;*/
-
-        mStickX = mMarStartX;
-        mStickY = mMarStartY;
+        randomPosition();
     }
 
     @Override
@@ -137,6 +151,13 @@ public class MarqueeView extends View implements View.OnTouchListener {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
+                if (x < 50) {
+                    Log.d(TAG, "onTouch: LINE WITH RANDOM POSITION");
+                    randomPosition();
+                    invalidate();
+                    return false;
+                }
+
                 if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
                     mStickY-mStickBound < y && y < mStickY+mStickBound) {
                     Log.d(TAG, "onTouch: INSIDE_STICK_BOUND");
@@ -150,29 +171,46 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
                     mStickY-mStickBound < y && y < mStickY+mStickBound) {
 
-                    mStickX = x;
-                    mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY - mMarStartY);
+                    float xAbs = Math.abs(mMarStartX-mMarEndX);
+                    float yAbs = Math.abs(mMarStartY-mMarEndY);
 
+                    if (yAbs < xAbs) {
+                        mStickX = x;
+                        mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY - mMarStartY);
+                    } else {
+                        mStickX = mMarStartX + (y - mMarStartY) / (mMarEndY - mMarStartY) * (mMarEndX - mMarStartX);
+                        mStickY = y;
+                    }
+
+                    /*// Check collision
                     if (mMarStartX < mMarEndX) {
-
                         if (x < mMarStartX) {
                             mStickX = mMarStartX;
-                            mStickY = mMarStartY;
                         } else if (x > mMarEndX) {
                             mStickX = mMarEndX;
-                            mStickY = mMarEndY;
                         }
-
                     } else {
-
                         if (x < mMarEndX) {
                             mStickX = mMarEndX;
-                            mStickY = mMarEndY;
                         } else if (x > mMarStartX) {
                             mStickX = mMarStartX;
-                            mStickY = mMarStartY;
                         }
                     }
+
+                    if (mMarStartY < mMarEndY) {
+                        if (y < mMarStartY) {
+                            mStickY = mMarStartY;
+                        } else if (y > mMarEndY) {
+                            mStickY = mMarEndY;
+                        }
+                    } else {
+                        if (y < mMarEndY) {
+                            mStickY = mMarEndY;
+                        } else if (y > mMarStartY) {
+                            mStickY = mMarStartY;
+                        }
+                    }*/
+
                 } else {
                     return false;
                 }
