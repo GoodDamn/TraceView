@@ -11,7 +11,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MarqueeView marqueeView = new MarqueeView(this);
+        MarqueeEditorView marqueeView = new MarqueeEditorView(this);
         marqueeView.setBackgroundColor(0);
 
         setContentView(marqueeView);
