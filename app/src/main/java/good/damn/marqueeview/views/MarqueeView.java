@@ -9,12 +9,15 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import good.damn.marqueeview.interfaces.OnMarqueeFinishListener;
 import good.damn.marqueeview.models.Line;
 import good.damn.marqueeview.models.LineConfig;
 
 public class MarqueeView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
+
+    private OnMarqueeFinishListener mOnMarqueeFinishListener;
 
     private Line[] mLines;
     private LineConfig[] mLineConfigs;
@@ -73,6 +76,10 @@ public class MarqueeView extends View implements View.OnTouchListener {
         setOnTouchListener(this);
     }
 
+    public void setOnMarqueeFinishListener(OnMarqueeFinishListener  finishListener) {
+        mOnMarqueeFinishListener = finishListener;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -123,6 +130,18 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
                 if (state == Line.DRAW_FALSE) {
                     return false;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                // Check progress to finish
+                for (Line mLine : mLines) {
+                    Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + mLine.getProgress());
+                    if (mLine.getProgress() < 0.95)
+                        return false;
+                }
+
+                if (mOnMarqueeFinishListener != null) {
+                    mOnMarqueeFinishListener.onFinish();
                 }
 
                 break;

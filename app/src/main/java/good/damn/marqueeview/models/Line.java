@@ -33,6 +33,8 @@ public class Line {
     private float mStickX = 0;
     private float mStickY = 0;
 
+    private float mProgress = 0;
+
     private int mWidth = 1;
     private int mHeight = 1;
 
@@ -52,6 +54,10 @@ public class Line {
 
     public void setColor(int color) {
         mPaintForeground.setColor(color);
+    }
+
+    public float getProgress() {
+        return mProgress;
     }
 
     public void setStrokeWidth(byte width) {
@@ -127,7 +133,10 @@ public class Line {
 
             if (yAbs < xAbs) {
                 mStickX = x;
-                mStickY = mMarStartY + (x - mMarStartX) / (mMarEndX - mMarStartX) * (mMarEndY - mMarStartY);
+
+                mProgress = (x - mMarStartX) / (mMarEndX - mMarStartX);
+
+                mStickY = mMarStartY + mProgress * (mMarEndY - mMarStartY);
 
                 if (mMarStartX < mMarEndX) {
                     if (x < mMarStartX) {
@@ -150,7 +159,8 @@ public class Line {
                 return DRAW_INVALIDATE_WITH_FALSE;
             }
 
-            mStickX = mMarStartX + (y - mMarStartY) / (mMarEndY - mMarStartY) * (mMarEndX - mMarStartX);
+            mProgress = (y - mMarStartY) / (mMarEndY - mMarStartY);
+            mStickX = mMarStartX + mProgress * (mMarEndX - mMarStartX);
             mStickY = y;
             if (mMarStartY < mMarEndY) {
                 if (y < mMarStartY) {
