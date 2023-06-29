@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 import good.damn.marqueeview.activities.PreviewActivity;
 import good.damn.marqueeview.models.LineConfig;
@@ -20,6 +21,7 @@ import good.damn.marqueeview.utils.FileUtils;
 public class MarqueeEditorView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeEditorView";
+    private static final Random mRandom = new Random();
 
     private final Paint mPaint = new Paint();
     private final Paint mPaintCircle = new Paint();
@@ -96,9 +98,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
 
                     FileUtils.mkSVCFile(getContext(), mLineConfigs);
-
                     Intent intent = new Intent(getContext(), PreviewActivity.class);
-
                     getContext().startActivity(intent);
 
                     return false;
@@ -113,11 +113,17 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                mLineConfigs.add(new LineConfig(
+                LineConfig config = new LineConfig(
                         mFromX / getWidth(),
                         mFromY / getHeight(),
                         mToX / getWidth(),
-                        mToY / getHeight()));
+                        mToY / getHeight());
+                config.color =
+                        (0xFF << 24) |
+                        ((mRandom.nextInt(205)+50) << 16) |
+                        ((mRandom.nextInt(205)+50) << 8) |
+                        (mRandom.nextInt(205)+50);
+                mLineConfigs.add(config);
                 Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mLineConfigs.size());
                 break;
         }

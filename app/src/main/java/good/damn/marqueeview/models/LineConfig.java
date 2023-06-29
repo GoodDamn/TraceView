@@ -8,7 +8,7 @@ public class LineConfig {
     public float toY;
 
     public int color = 0xffff0000;
-    public byte strokeWidth = 10;
+    public byte strokeWidth = 15;
 
     public LineConfig() {}
 
