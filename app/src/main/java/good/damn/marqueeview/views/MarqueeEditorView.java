@@ -1,6 +1,7 @@
-package good.damn.marqueeview;
+package good.damn.marqueeview.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -12,6 +13,10 @@ import androidx.annotation.Nullable;
 
 import java.util.LinkedList;
 
+import good.damn.marqueeview.activities.PreviewActivity;
+import good.damn.marqueeview.models.LineConfig;
+import good.damn.marqueeview.utils.FileUtils;
+
 public class MarqueeEditorView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeEditorView";
@@ -19,7 +24,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     private final Paint mPaint = new Paint();
     private final Paint mPaintCircle = new Paint();
 
-    private final LinkedList<LinePosition> mLinePositions = new LinkedList<>();
+    private final LinkedList<LineConfig> mLineConfigs = new LinkedList<>();
 
     private float mFromX;
     private float mFromY;
@@ -58,9 +63,11 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        for (LinePosition position: mLinePositions) {
-            canvas.drawLine(position.fromX, position.fromY, position.toX, position.toY, mPaint);
-            canvas.drawCircle(position.fromX, position.fromY, mPaint.getStrokeWidth(),mPaintCircle);
+        for (LineConfig position: mLineConfigs) {
+            float sX = position.fromX*getWidth();
+            float sY = position.fromY*getHeight();
+            canvas.drawLine(sX, sY, position.toX * getWidth(), position.toY*getHeight(), mPaint);
+            canvas.drawCircle(sX, sY, mPaint.getStrokeWidth(),mPaintCircle);
         }
 
         canvas.drawLine(mFromX, mFromY, mToX, mToY, mPaint);
@@ -74,8 +81,8 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
 
                 if (event.getX() > getWidth() - 100 && event.getY() < 100) { // Undo previous action
-                    if (mLinePositions.size() != 0) {
-                        mLinePositions.removeLast();
+                    if (mLineConfigs.size() != 0) {
+                        mLineConfigs.removeLast();
                     }
                     mFromX = 0;
                     mFromY = 0;
@@ -83,6 +90,17 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                     mToY = 0;
 
                     invalidate();
+                    return false;
+                }
+
+                if (event.getX() < 100 && event.getY() < 100) { // start preview mode
+
+                    FileUtils.mkSVCFile(getContext(), mLineConfigs);
+
+                    Intent intent = new Intent(getContext(), PreviewActivity.class);
+
+                    getContext().startActivity(intent);
+
                     return false;
                 }
 
@@ -95,9 +113,12 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                mLinePositions.add(new LinePosition(
-                        mFromX, mFromY, mToX, mToY));
-                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mLinePositions.size());
+                mLineConfigs.add(new LineConfig(
+                        mFromX / getWidth(),
+                        mFromY / getHeight(),
+                        mToX / getWidth(),
+                        mToY / getHeight()));
+                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mLineConfigs.size());
                 break;
         }
 

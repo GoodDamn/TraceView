@@ -1,8 +1,7 @@
-package good.damn.marqueeview;
+package good.damn.marqueeview.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -10,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import java.util.Random;
+import good.damn.marqueeview.models.Line;
 
 public class MarqueeView extends View implements View.OnTouchListener {
 

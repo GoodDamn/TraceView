@@ -1,4 +1,4 @@
-package good.damn.marqueeview;
+package good.damn.marqueeview.models;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

@@ -1,9 +1,10 @@
-package good.damn.marqueeview;
+package good.damn.marqueeview.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
+
+import good.damn.marqueeview.views.MarqueeEditorView;
 
 public class MainActivity extends AppCompatActivity {
 
