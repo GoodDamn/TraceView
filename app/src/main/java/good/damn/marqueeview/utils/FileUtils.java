@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import good.damn.marqueeview.models.LineConfig;
@@ -82,8 +83,11 @@ public class FileUtils {
                 fis.read(shortBuffer);
                 c.toY = ByteUtils.fixedPointNumber(shortBuffer);
 
-                fis.read(intBuffer); // miss color
-                fis.read(); // miss stroke width
+                fis.read(intBuffer);
+                c.color = ByteUtils.integer(intBuffer);
+                Log.d(TAG, "retrieveSVCFile: COLOR: FROM: " + Arrays.toString(intBuffer) + " TO: " + c.color);
+
+                c.strokeWidth = (byte) fis.read();
             }
 
             fis.close();

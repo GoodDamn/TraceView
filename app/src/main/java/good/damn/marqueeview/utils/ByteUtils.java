@@ -30,4 +30,11 @@ public class ByteUtils {
                 (byte) (val & 0xff)
         };
     }
+
+    public static int integer(byte[] in) {
+        return (in[0] & 0xff) << 24 |
+                (in[1] & 0xff) << 16 |
+                (in[2] & 0xff) << 8 |
+                in[3] & 0xff;
+    }
 }

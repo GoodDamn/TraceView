@@ -50,6 +50,23 @@ public class Line {
         mPaintBackground.setStrokeCap(Paint.Cap.ROUND);
     }
 
+    public void setColor(int color) {
+        mPaintForeground.setColor(color);
+    }
+
+    public void setStrokeWidth(byte width) {
+        mPaintForeground.setStrokeWidth(width);
+    }
+
+    public boolean checkCollide(float x, float y) {
+        Log.d(TAG, "checkCollide: STICK_X: " + mStickX +
+                " STICK_Y: " + mStickY +
+                " STICK_BOUND: " + mStickBound +
+                " X: " + x + " Y: " + y);
+        return mStickX-mStickBound < x && x < mStickX+mStickBound &&
+                mStickY-mStickBound < y && y < mStickY+mStickBound;
+    }
+
     public void onDraw(Canvas canvas) {
         // Background line
         canvas.drawLine(
@@ -98,15 +115,6 @@ public class Line {
                 mRandom.nextFloat(), mRandom.nextFloat(),
                 mRandom.nextFloat(), mRandom.nextFloat());
         Log.d(TAG, "onLayout: Line::onLayout();");
-    }
-
-    public boolean checkCollide(float x, float y) {
-        Log.d(TAG, "checkCollide: STICK_X: " + mStickX +
-                " STICK_Y: " + mStickY +
-                " STICK_BOUND: " + mStickBound +
-                " X: " + x + " Y: " + y);
-        return mStickX-mStickBound < x && x < mStickX+mStickBound &&
-                mStickY-mStickBound < y && y < mStickY+mStickBound;
     }
 
     public byte onTouch(float x, float y) {

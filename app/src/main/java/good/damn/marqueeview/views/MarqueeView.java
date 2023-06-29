@@ -62,6 +62,8 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
         for (byte i = 0; i < mLines.length;i++) {
             mLines[i] = new Line();
+            mLines[i].setColor(lineConfigs[i].color);
+            mLines[i].setStrokeWidth(lineConfigs[i].strokeWidth);
         }
 
         mLineConfigs = lineConfigs;
