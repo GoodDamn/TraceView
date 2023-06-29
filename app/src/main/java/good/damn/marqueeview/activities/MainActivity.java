@@ -14,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
 
         MarqueeEditorView marqueeView = new MarqueeEditorView(this);
         marqueeView.setBackgroundColor(0);
-
         setContentView(marqueeView);
     }
 }

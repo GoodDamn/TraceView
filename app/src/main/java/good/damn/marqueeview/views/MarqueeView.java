@@ -10,26 +10,35 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import good.damn.marqueeview.models.Line;
+import good.damn.marqueeview.models.LineConfig;
 
 public class MarqueeView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
 
     private Line[] mLines;
+    private LineConfig[] mLineConfigs;
 
     private Line mCurrentLineTouching;
 
-    private void init() {
+    private void calculate() {
 
-        mLines = new Line[10];
-
-        for (byte i = 0; i < mLines.length;i++) {
-            mLines[i] = new Line();
+        if (getWidth() <= 10 && getHeight() <= 10) {
+            return;
         }
 
-        setOnTouchListener(this);
+        LineConfig c;
+
+        for (byte i = 0; i < mLineConfigs.length; i++) {
+            c = mLineConfigs[i];
+            mLines[i].onLayout(getWidth(), getHeight(),
+                    c.fromX,c.fromY,c.toX,c.toY);
+        }
     }
 
+    private void init() {
+        setOnTouchListener(this);
+    }
 
     public MarqueeView(Context context) {
         super(context);
@@ -46,9 +55,30 @@ public class MarqueeView extends View implements View.OnTouchListener {
         init();
     }
 
+    public void setVectorsSource(LineConfig[] lineConfigs) {
+        setOnTouchListener(null);
+
+        mLines = new Line[lineConfigs.length];
+
+        for (byte i = 0; i < mLines.length;i++) {
+            mLines[i] = new Line();
+        }
+
+        mLineConfigs = lineConfigs;
+
+        calculate();
+
+        setOnTouchListener(this);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (mLines == null) {
+            return;
+        }
+
         for (Line mLine : mLines) {
             mLine.onDraw(canvas);
         }
@@ -57,7 +87,14 @@ public class MarqueeView extends View implements View.OnTouchListener {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        mLines[0].onLayout(getWidth(), getHeight(), 0.1f,0.3f,0.9f, 0.3f);
+
+        if (mLineConfigs == null) {
+            return;
+        }
+
+        calculate();
+
+        /*mLines[0].onLayout(getWidth(), getHeight(), 0.1f,0.3f,0.9f, 0.3f);
 
         // upper-triangle
         mLines[1].onLayout(getWidth(), getHeight(), 0.5f,0.1f,0.3f, 0.3f);
@@ -74,7 +111,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
         // left side of triangle
         mLines[8].onLayout(getWidth(), getHeight(), 0.2f,0.95f,0.2f, 0.5f);
-        mLines[9].onLayout(getWidth(), getHeight(), 0.2f,0.5f,0.4f, 0.4f);
+        mLines[9].onLayout(getWidth(), getHeight(), 0.2f,0.5f,0.4f, 0.4f);*/
 
     }
 

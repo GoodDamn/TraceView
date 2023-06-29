@@ -40,7 +40,7 @@ public class FileUtils {
                 fos.write(ByteUtils.fixedPointNumber(l.fromX));
                 fos.write(ByteUtils.fixedPointNumber(l.fromY));
                 fos.write(ByteUtils.fixedPointNumber(l.toX));
-                fos.write(ByteUtils.fixedPointNumber(l.fromY));
+                fos.write(ByteUtils.fixedPointNumber(l.toY));
                 fos.write(ByteUtils.integer(l.color));
                 fos.write((byte) l.strokeWidth);
             }
