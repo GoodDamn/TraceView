@@ -64,6 +64,13 @@ public class Line {
         mPaintForeground.setStrokeWidth(width);
     }
 
+    public void reset() {
+        mStickX = mMarStartX;
+        mStickY = mMarStartY;
+
+        mProgress = 0;
+    }
+
     public boolean checkCollide(float x, float y) {
         Log.d(TAG, "checkCollide: STICK_X: " + mStickX +
                 " STICK_Y: " + mStickY +
@@ -85,10 +92,11 @@ public class Line {
         canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintForeground);
         canvas.drawCircle(mStickX,mStickY, mPaintForeground.getStrokeWidth(), mPaintForeground);
 
-        float x = mStickX - mStickBound;
-        float y = mStickY - mStickBound;
 
         if (DEBUG_MODE) {
+            float x = mStickX - mStickBound;
+            float y = mStickY - mStickBound;
+
             canvas.drawRect(x, y,
                     mStickX + mStickBound,
                     mStickY + mStickBound,

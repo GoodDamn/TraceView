@@ -3,6 +3,7 @@ package good.damn.marqueeview.activities;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +27,11 @@ public class PreviewActivity extends AppCompatActivity {
         marqueeView.setOnMarqueeFinishListener(new OnMarqueeFinishListener() {
             @Override
             public void onFinish() {
-                Log.d(TAG, "onFinish: MARQUEE FINISHED!");
+                marqueeView.restart();
+                Toast.makeText(PreviewActivity.this,
+                        "MARQUEE FINISHED!",
+                        Toast.LENGTH_SHORT)
+                        .show();
             }
         });
 

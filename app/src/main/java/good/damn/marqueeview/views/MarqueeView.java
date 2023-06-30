@@ -19,6 +19,8 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
     private OnMarqueeFinishListener mOnMarqueeFinishListener;
 
+    private boolean mIsFinished = false;
+
     private Line[] mLines;
     private LineConfig[] mLineConfigs;
 
@@ -56,6 +58,18 @@ public class MarqueeView extends View implements View.OnTouchListener {
     public MarqueeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public void restart() {
+        if (mLines == null) {
+            throw new IllegalStateException("ARRAY OF LINES IS NULL");
+        }
+
+        for (Line line: mLines) {
+            line.reset();
+        }
+        mIsFinished = false;
+        invalidate();
     }
 
     public void setVectorsSource(LineConfig[] lineConfigs) {
@@ -133,12 +147,22 @@ public class MarqueeView extends View implements View.OnTouchListener {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+
+                Log.d(TAG, "onTouch: ACTION_UP: IS_FINISHED: " + mIsFinished);
+
+                if (mIsFinished) {
+                    break;
+                }
+
                 // Check progress to finish
+
                 for (Line mLine : mLines) {
                     Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + mLine.getProgress());
                     if (mLine.getProgress() < 0.95)
                         return false;
                 }
+
+                mIsFinished = true;
 
                 if (mOnMarqueeFinishListener != null) {
                     mOnMarqueeFinishListener.onFinish();
