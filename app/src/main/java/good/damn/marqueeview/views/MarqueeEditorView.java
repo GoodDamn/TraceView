@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import java.util.LinkedList;
@@ -59,6 +60,10 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     public MarqueeEditorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public void setLineColor(@ColorInt int color) {
+        mPaintCircle.setColor(color);
     }
 
     @Override
@@ -118,11 +123,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                         mFromY / getHeight(),
                         mToX / getWidth(),
                         mToY / getHeight());
-                config.color =
-                        (0xFF << 24) |
-                        ((mRandom.nextInt(205)+50) << 16) |
-                        ((mRandom.nextInt(205)+50) << 8) |
-                        (mRandom.nextInt(205)+50);
+                config.color = mPaintCircle.getColor();
                 mLineConfigs.add(config);
                 Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mLineConfigs.size());
                 break;
