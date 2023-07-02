@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import good.damn.marqueeview.activities.PreviewActivity;
+import good.damn.marqueeview.graphics.Circle;
+import good.damn.marqueeview.graphics.editor.CircleEditor;
 import good.damn.marqueeview.graphics.editor.EntityEditor;
 import good.damn.marqueeview.graphics.editor.LineEditor;
 import good.damn.marqueeview.models.EntityConfig;
@@ -37,7 +39,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     private float mToX;
     private float mToY;
 
-    private LineEditor mEntityEditor;
+    private EntityEditor mEntityEditor;
 
     private void init() {
 
@@ -102,6 +104,11 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                     mToY = 0;
 
                     invalidate();
+                    return false;
+                }
+
+                if (event.getX() > 100 && event.getX() < 200 && event.getY() < 100) { // draw circles
+                    mEntityEditor = new CircleEditor(mPaintCircle, mPaint);
                     return false;
                 }
 
