@@ -14,8 +14,6 @@ public abstract class Entity {
     public static final byte DRAW_FALSE = 1;
     public static final byte DRAW_TRUE = 2;
 
-    protected static final boolean RELEASE_MODE = true;
-
     protected final Random mRandom = new Random();
 
     protected final Paint mPaintForeground = new Paint();
@@ -98,11 +96,6 @@ public abstract class Entity {
 
 
     public void onDraw(Canvas canvas) {
-        canvas.drawCircle(mStickX,mStickY, mPaintForeground.getStrokeWidth(), mPaintForeground);
-
-        if (RELEASE_MODE) {
-            return;
-        }
 
         float x = mStickX - mStickBound;
         float y = mStickY - mStickBound;

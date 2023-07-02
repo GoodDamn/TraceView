@@ -10,16 +10,19 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import good.damn.marqueeview.graphics.Circle;
+import good.damn.marqueeview.graphics.Line;
+import good.damn.marqueeview.graphics.editor.CircleEditor;
+import good.damn.marqueeview.models.EditorConfig;
 import good.damn.marqueeview.models.EntityConfig;
 
 public class FileUtils {
 
     private static final String TAG = "FileUtils";
 
-    public static void mkSVCFile(Context context, LinkedList<EntityConfig> entityConfigs) {
+    public static void mkSVCFile(Context context, LinkedList<EditorConfig> entityConfigs) {
 
         FileOutputStream fos;
-
 
         try {
             File file = new File(context.getCacheDir()+"/dumb.svc");
@@ -32,8 +35,14 @@ public class FileUtils {
 
             fos.write(entityConfigs.size()); // vectors size
 
-            for (EntityConfig l: entityConfigs) {
-                fos.write(0);
+            byte vectorType;
+
+            for (EditorConfig l: entityConfigs) {
+                vectorType = 0; // line by default
+                if (l.entityEditor instanceof CircleEditor) {
+                    vectorType = 1;
+                }
+                fos.write(vectorType);
                 fos.write(ByteUtils.fixedPointNumber(l.fromX));
                 fos.write(ByteUtils.fixedPointNumber(l.fromY));
                 fos.write(ByteUtils.fixedPointNumber(l.toX));
@@ -84,6 +93,18 @@ public class FileUtils {
                 Log.d(TAG, "retrieveSVCFile: COLOR: FROM: " + Arrays.toString(intBuffer) + " TO: " + c.color);
 
                 c.strokeWidth = (byte) fis.read();
+
+                switch (vectorType) {
+                    case 0:
+                        c.entity = new Line();
+                        break;
+                    case 1:
+                        c.entity = new Circle();
+                        break;
+                }
+
+                c.entity.setColor(c.color);
+                c.entity.setStrokeWidth(c.strokeWidth);
             }
 
             fis.close();

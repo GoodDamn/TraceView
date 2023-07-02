@@ -1,5 +1,6 @@
 package good.damn.marqueeview.models;
 
+import good.damn.marqueeview.graphics.Entity;
 import good.damn.marqueeview.graphics.editor.EntityEditor;
 
 public class EntityConfig {
@@ -12,7 +13,7 @@ public class EntityConfig {
     public int color = 0xffff0000;
     public byte strokeWidth = 15;
 
-    public EntityEditor entity;
+    public Entity entity;
 
     public EntityConfig() {}
 

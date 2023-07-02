@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import good.damn.marqueeview.graphics.Entity;
 import good.damn.marqueeview.interfaces.OnMarqueeFinishListener;
 import good.damn.marqueeview.graphics.Line;
 import good.damn.marqueeview.models.EntityConfig;
@@ -21,10 +22,9 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
     private boolean mIsFinished = false;
 
-    private Line[] mLines;
     private EntityConfig[] mEntityConfigs;
 
-    private Line mCurrentLineTouching;
+    private Entity mCurrentEntityTouch;
 
     private void calculate() {
 
@@ -32,12 +32,9 @@ public class MarqueeView extends View implements View.OnTouchListener {
             return;
         }
 
-        EntityConfig c;
-
-        for (byte i = 0; i < mEntityConfigs.length; i++) {
-            c = mEntityConfigs[i];
-            mLines[i].onLayout(getWidth(), getHeight(),
-                    c.fromX,c.fromY,c.toX,c.toY);
+        for (EntityConfig c : mEntityConfigs) {
+            c.entity.onLayout(getWidth(), getHeight(),
+                    c.fromX, c.fromY, c.toX, c.toY);
         }
     }
 
@@ -61,12 +58,12 @@ public class MarqueeView extends View implements View.OnTouchListener {
     }
 
     public void restart() {
-        if (mLines == null) {
+        if (mEntityConfigs == null) {
             throw new IllegalStateException("ARRAY OF LINES IS NULL");
         }
 
-        for (Line line: mLines) {
-            line.reset();
+        for (EntityConfig c: mEntityConfigs) {
+            c.entity.reset();
         }
         mIsFinished = false;
         invalidate();
@@ -74,15 +71,6 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
     public void setVectorsSource(EntityConfig[] entityConfigs) {
         setOnTouchListener(null);
-
-        mLines = new Line[entityConfigs.length];
-
-        for (byte i = 0; i < mLines.length;i++) {
-            mLines[i] = new Line();
-            mLines[i].setColor(entityConfigs[i].color);
-            mLines[i].setStrokeWidth(entityConfigs[i].strokeWidth);
-        }
-
         mEntityConfigs = entityConfigs;
 
         calculate();
@@ -98,12 +86,12 @@ public class MarqueeView extends View implements View.OnTouchListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mLines == null) {
+        if (mEntityConfigs == null) {
             return;
         }
 
-        for (Line mLine : mLines) {
-            mLine.onDraw(canvas);
+        for (EntityConfig c : mEntityConfigs) {
+            c.entity.onDraw(canvas);
         }
     }
 
@@ -128,22 +116,22 @@ public class MarqueeView extends View implements View.OnTouchListener {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
-                mCurrentLineTouching = null;
+                mCurrentEntityTouch = null;
 
-                for (Line mLine : mLines) {
-                    if (mLine.checkCollide(x,y)) {
-                        mCurrentLineTouching = mLine;
+                for (EntityConfig c : mEntityConfigs) {
+                    if (c.entity.checkCollide(x,y)) {
+                        mCurrentEntityTouch = c.entity;
                         break;
                     }
                 }
 
-                if (mCurrentLineTouching == null) {
+                if (mCurrentEntityTouch == null) {
                     return false;
                 }
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                byte state = mCurrentLineTouching.onTouch(x,y);
+                byte state = mCurrentEntityTouch.onTouch(x,y);
                 if (state == Line.DRAW_INVALIDATE_WITH_FALSE) {
                     invalidate();
                     return false;
@@ -163,9 +151,9 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
                 // Check progress to finish
 
-                for (Line mLine : mLines) {
-                    Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + mLine.getProgress());
-                    if (mLine.getProgress() < 0.95)
+                for (EntityConfig c : mEntityConfigs) {
+                    Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + c.entity.getProgress());
+                    if (c.entity.getProgress() < 0.95)
                         return false;
                 }
 

@@ -22,16 +22,11 @@ public class Line extends Entity {
                 mPaintBackground);
 
         canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintForeground);
+        canvas.drawCircle(mStickX,mStickY, mPaintForeground.getStrokeWidth(), mPaintForeground);
 
         super.onDraw(canvas);
     }
 
-    @Override
-    public void onLayout(int width, int height,
-                         float startX, float startY,
-                         float endX, float endY) {
-        super.onLayout(width, height, startX, startY, endX, endY);
-    }
 
     @Override
     float onXAxis() {

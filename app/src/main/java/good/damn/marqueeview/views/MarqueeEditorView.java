@@ -16,11 +16,10 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import good.damn.marqueeview.activities.PreviewActivity;
-import good.damn.marqueeview.graphics.Circle;
 import good.damn.marqueeview.graphics.editor.CircleEditor;
 import good.damn.marqueeview.graphics.editor.EntityEditor;
 import good.damn.marqueeview.graphics.editor.LineEditor;
-import good.damn.marqueeview.models.EntityConfig;
+import good.damn.marqueeview.models.EditorConfig;
 import good.damn.marqueeview.utils.FileUtils;
 
 public class MarqueeEditorView extends View implements View.OnTouchListener {
@@ -31,7 +30,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     private final Paint mPaint = new Paint();
     private final Paint mPaintCircle = new Paint();
 
-    private final LinkedList<EntityConfig> mEntityConfigs = new LinkedList<>();
+    private final LinkedList<EditorConfig> mEditorConfigs = new LinkedList<>();
 
     private float mFromX;
     private float mFromY;
@@ -77,11 +76,11 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        for (EntityConfig config: mEntityConfigs) { // already places entities
+        for (EditorConfig config: mEditorConfigs) { // already places entities
             float sX = config.fromX*getWidth();
             float sY = config.fromY*getHeight();
 
-            config.entity.draw(canvas, sX, sY, config.toX * getWidth(), config.toY*getHeight());
+            config.entityEditor.draw(canvas, sX, sY, config.toX * getWidth(), config.toY*getHeight());
         }
 
         // For new placing entity
@@ -107,8 +106,8 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
 
                 if (event.getX() > getWidth() - 100 && event.getY() < 100) { // Undo previous action
-                    if (mEntityConfigs.size() != 0) {
-                        mEntityConfigs.removeLast();
+                    if (mEditorConfigs.size() != 0) {
+                        mEditorConfigs.removeLast();
                     }
                     mFromX = 0;
                     mFromY = 0;
@@ -129,10 +128,9 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                     return false;
                 }
 
-
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
 
-                    FileUtils.mkSVCFile(getContext(), mEntityConfigs);
+                    FileUtils.mkSVCFile(getContext(), mEditorConfigs);
                     Intent intent = new Intent(getContext(), PreviewActivity.class);
                     getContext().startActivity(intent);
 
@@ -148,16 +146,16 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                EntityConfig config = new EntityConfig(
+                EditorConfig config = new EditorConfig(
                         mFromX / getWidth(),
                         mFromY / getHeight(),
                         mToX / getWidth(),
                         mToY / getHeight());
 
-                config.entity = mEntityEditor.copy();
+                config.entityEditor = mEntityEditor.copy();
                 config.color = mEntityEditor.getColor();
-                mEntityConfigs.add(config);
-                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEntityConfigs.size());
+                mEditorConfigs.add(config);
+                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEditorConfigs.size());
                 break;
         }
 
