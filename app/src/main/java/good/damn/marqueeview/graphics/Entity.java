@@ -1,44 +1,43 @@
-package good.damn.marqueeview.models;
+package good.damn.marqueeview.graphics;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import java.util.Random;
 
-public class Line {
+public abstract class Entity {
 
-    private static final String TAG = "Line";
+    private static final String TAG = "Entity";
 
     public static final byte DRAW_INVALIDATE_WITH_FALSE = 0;
     public static final byte DRAW_FALSE = 1;
     public static final byte DRAW_TRUE = 2;
 
-    private static final boolean DEBUG_MODE = false;
+    protected static final boolean RELEASE_MODE = true;
 
-    private final Random mRandom = new Random();
+    protected final Random mRandom = new Random();
 
-    private final Paint mPaintForeground = new Paint();
-    private final Paint mPaintBackground = new Paint();
-    private final Paint mPaintDebug = new Paint();
+    protected final Paint mPaintForeground = new Paint();
+    protected final Paint mPaintBackground = new Paint();
+    protected final Paint mPaintDebug = new Paint();
 
-    private final int mStickBound = 50;
+    protected final int mStickBound = 50;
 
-    private float mMarStartX = 0;
-    private float mMarStartY = 0;
-    private float mMarEndX = 1;
-    private float mMarEndY = 0;
+    protected float mMarStartX = 0;
+    protected float mMarStartY = 0;
+    protected float mMarEndX = 1;
+    protected float mMarEndY = 0;
 
-    private float mStickX = 0;
-    private float mStickY = 0;
+    protected int mWidth = 1;
+    protected int mHeight = 1;
 
-    private float mProgress = 0;
+    protected float mStickX = 0;
+    protected float mStickY = 0;
 
-    private int mWidth = 1;
-    private int mHeight = 1;
+    protected float mProgress = 0;
 
-    public Line() {
+    public Entity() {
         mPaintForeground.setColor(0xff00ff59);
         mPaintForeground.setStrokeWidth(10);
         mPaintForeground.setStrokeCap(Paint.Cap.ROUND);
@@ -64,13 +63,6 @@ public class Line {
         mPaintForeground.setStrokeWidth(width);
     }
 
-    public void reset() {
-        mStickX = mMarStartX;
-        mStickY = mMarStartY;
-
-        mProgress = 0;
-    }
-
     public boolean checkCollide(float x, float y) {
         Log.d(TAG, "checkCollide: STICK_X: " + mStickX +
                 " STICK_Y: " + mStickY +
@@ -80,36 +72,16 @@ public class Line {
                 mStickY-mStickBound < y && y < mStickY+mStickBound;
     }
 
-    public void onDraw(Canvas canvas) {
-        // Background line
-        canvas.drawLine(
-                mMarStartX,
-                mMarStartY,
-                mMarEndX,
-                mMarEndY,
-                mPaintBackground);
+    public void reset() {
+        mStickX = mMarStartX;
+        mStickY = mMarStartY;
 
-        canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintForeground);
-        canvas.drawCircle(mStickX,mStickY, mPaintForeground.getStrokeWidth(), mPaintForeground);
-
-
-        if (DEBUG_MODE) {
-            float x = mStickX - mStickBound;
-            float y = mStickY - mStickBound;
-
-            canvas.drawRect(x, y,
-                    mStickX + mStickBound,
-                    mStickY + mStickBound,
-                    mPaintDebug);
-
-            canvas.drawText("Y: " + y, x, y - mPaintDebug.getTextSize(), mPaintDebug);
-            canvas.drawText("X: " + x, x, y - mPaintDebug.getTextSize() * 2, mPaintDebug);
-        }
+        mProgress = 0;
     }
 
     public void onLayout(int width, int height,
-                         float startX, float startY,
-                         float endX, float endY) {
+                           float startX, float startY,
+                           float endX, float endY) {
         Log.d(TAG, "onLayout: Line::onLayout();");
         mWidth = width;
         mHeight = height;
@@ -124,14 +96,26 @@ public class Line {
         mStickY = mMarStartY;
     }
 
-    public void onLayout(int width, int height) {
-        onLayout(width,height,
-                mRandom.nextFloat(), mRandom.nextFloat(),
-                mRandom.nextFloat(), mRandom.nextFloat());
-        Log.d(TAG, "onLayout: Line::onLayout();");
+
+    public void onDraw(Canvas canvas) {
+        canvas.drawCircle(mStickX,mStickY, mPaintForeground.getStrokeWidth(), mPaintForeground);
+
+        if (RELEASE_MODE) {
+            return;
+        }
+
+        float x = mStickX - mStickBound;
+        float y = mStickY - mStickBound;
+        canvas.drawRect(x, y,
+                mStickX + mStickBound,
+                mStickY + mStickBound,
+                mPaintDebug);
+
+        canvas.drawText("Y: " + y, x, y - mPaintDebug.getTextSize(), mPaintDebug);
+        canvas.drawText("X: " + x, x, y - mPaintDebug.getTextSize() * 2, mPaintDebug);
     }
 
-    public byte onTouch(float x, float y) {
+    public final byte onTouch(float x, float y) {
         Log.d(TAG, "onTouch: X: " + x + " " + y);
         if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
                 mStickY-mStickBound < y && y < mStickY+mStickBound) {
@@ -144,7 +128,7 @@ public class Line {
 
                 mProgress = (x - mMarStartX) / (mMarEndX - mMarStartX);
 
-                mStickY = mMarStartY + mProgress * (mMarEndY - mMarStartY);
+                mStickY = onYAxis();
 
                 if (mMarStartX < mMarEndX) {
                     if (x < mMarStartX) {
@@ -168,7 +152,7 @@ public class Line {
             }
 
             mProgress = (y - mMarStartY) / (mMarEndY - mMarStartY);
-            mStickX = mMarStartX + mProgress * (mMarEndX - mMarStartX);
+            mStickX = onXAxis();
             mStickY = y;
             if (mMarStartY < mMarEndY) {
                 if (y < mMarStartY) {
@@ -193,4 +177,7 @@ public class Line {
 
         return DRAW_FALSE;
     }
+
+    abstract float onXAxis();
+    abstract float onYAxis();
 }

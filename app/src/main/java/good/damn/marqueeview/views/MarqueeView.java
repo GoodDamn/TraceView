@@ -10,7 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import good.damn.marqueeview.interfaces.OnMarqueeFinishListener;
-import good.damn.marqueeview.models.Line;
+import good.damn.marqueeview.graphics.Line;
 import good.damn.marqueeview.models.LineConfig;
 
 public class MarqueeView extends View implements View.OnTouchListener {
@@ -128,12 +128,19 @@ public class MarqueeView extends View implements View.OnTouchListener {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
+                mCurrentLineTouching = null;
+
                 for (Line mLine : mLines) {
                     if (mLine.checkCollide(x,y)) {
                         mCurrentLineTouching = mLine;
                         break;
                     }
                 }
+
+                if (mCurrentLineTouching == null) {
+                    return false;
+                }
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 byte state = mCurrentLineTouching.onTouch(x,y);
