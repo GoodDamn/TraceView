@@ -7,6 +7,7 @@ public class CircleEditor extends EntityEditor{
 
     public CircleEditor(Paint fore, Paint back) {
         super(fore, back);
+        mPaintBackground.setStyle(Paint.Style.STROKE);
     }
 
     @Override
@@ -16,7 +17,13 @@ public class CircleEditor extends EntityEditor{
 
     @Override
     public void draw(Canvas canvas, float fromX, float fromY, float toX, float toY) {
-        canvas.drawCircle(fromX,fromY, (float) Math.hypot(fromX-toX,fromY-toY),mPaintBackground);
-        canvas.drawCircle(fromX,fromY,mPaintBackground.getStrokeWidth(),mPaintForeground);
+        float radius = (float) Math.hypot(toX-fromX,toY-fromY);
+        canvas.drawArc(fromX-radius,
+                fromY-radius,
+                fromX+radius,
+                fromY+radius,
+                0,360,false,mPaintBackground);
+
+        canvas.drawCircle(fromX-radius,fromY,mPaintBackground.getStrokeWidth(),mPaintForeground);
     }
 }

@@ -86,6 +86,18 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
 
         // For new placing entity
         mEntityEditor.draw(canvas,mFromX,mFromY, mToX, mToY);
+
+        // Draw icons:
+        // Triangle
+        canvas.drawLine(25,25,25,75,mPaint);
+        canvas.drawLine(25,75,75,50,mPaint);
+        canvas.drawLine(75,50,25,25,mPaint);
+
+        // Circle
+        canvas.drawCircle(150,50,25,mPaint);
+
+        // Line
+        canvas.drawLine(225, 75,275,25,mPaint);
     }
 
     @Override
@@ -111,6 +123,12 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                     mEntityEditor = new CircleEditor(mPaintCircle, mPaint);
                     return false;
                 }
+
+                if (event.getX() > 200 && event.getX() < 300 && event.getY() < 100) { // draw Line
+                    mEntityEditor = new LineEditor(mPaintCircle, mPaint);
+                    return false;
+                }
+
 
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
 
