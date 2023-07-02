@@ -27,14 +27,58 @@ public class Line extends Entity {
         super.onDraw(canvas);
     }
 
-
     @Override
-    float onXAxis() {
-        return mMarStartX + mProgress * (mMarEndX - mMarStartX);
-    }
+    void onPlace(float x, float y) {
+        float xAbs = Math.abs(mMarStartX-mMarEndX);
+        float yAbs = Math.abs(mMarStartY-mMarEndY);
 
-    @Override
-    float onYAxis() {
-        return mMarStartY + mProgress * (mMarEndY - mMarStartY);
+        if (yAbs < xAbs) {
+            mStickX = x;
+
+            mProgress = (x - mMarStartX) / (mMarEndX - mMarStartX);
+
+            mStickY = mMarStartY + mProgress * (mMarEndY - mMarStartY);
+
+            if (mMarStartX < mMarEndX) {
+                if (x < mMarStartX) {
+                    mStickX = mMarStartX;
+                    mStickY = mMarStartY;
+                } else if (x > mMarEndX) {
+                    mStickX = mMarEndX;
+                    mStickY = mMarEndY;
+                }
+            } else {
+                if (x < mMarEndX) {
+                    mStickX = mMarEndX;
+                    mStickY = mMarEndY;
+                } else if (x > mMarStartX) {
+                    mStickX = mMarStartX;
+                    mStickY = mMarStartY;
+                }
+            }
+
+            return;
+        }
+
+        mProgress = (y - mMarStartY) / (mMarEndY - mMarStartY);
+        mStickX = mMarStartX + mProgress * (mMarEndX - mMarStartX);
+        mStickY = y;
+        if (mMarStartY < mMarEndY) {
+            if (y < mMarStartY) {
+                mStickX = mMarStartX;
+                mStickY = mMarStartY;
+            } else if (y > mMarEndY) {
+                mStickX = mMarEndX;
+                mStickY = mMarEndY;
+            }
+        } else {
+            if (y < mMarEndY) {
+                mStickX = mMarEndX;
+                mStickY = mMarEndY;
+            } else if (y > mMarStartY) {
+                mStickX = mMarStartX;
+                mStickY = mMarStartY;
+            }
+        }
     }
 }

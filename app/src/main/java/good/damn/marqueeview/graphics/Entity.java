@@ -112,65 +112,12 @@ public abstract class Entity {
         Log.d(TAG, "onTouch: X: " + x + " " + y);
         if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
                 mStickY-mStickBound < y && y < mStickY+mStickBound) {
-
-            float xAbs = Math.abs(mMarStartX-mMarEndX);
-            float yAbs = Math.abs(mMarStartY-mMarEndY);
-
-            if (yAbs < xAbs) {
-                mStickX = x;
-
-                mProgress = (x - mMarStartX) / (mMarEndX - mMarStartX);
-
-                mStickY = onYAxis();
-
-                if (mMarStartX < mMarEndX) {
-                    if (x < mMarStartX) {
-                        mStickX = mMarStartX;
-                        mStickY = mMarStartY;
-                    } else if (x > mMarEndX) {
-                        mStickX = mMarEndX;
-                        mStickY = mMarEndY;
-                    }
-                } else {
-                    if (x < mMarEndX) {
-                        mStickX = mMarEndX;
-                        mStickY = mMarEndY;
-                    } else if (x > mMarStartX) {
-                        mStickX = mMarStartX;
-                        mStickY = mMarStartY;
-                    }
-                }
-
-                return DRAW_INVALIDATE_WITH_FALSE;
-            }
-
-            mProgress = (y - mMarStartY) / (mMarEndY - mMarStartY);
-            mStickX = onXAxis();
-            mStickY = y;
-            if (mMarStartY < mMarEndY) {
-                if (y < mMarStartY) {
-                    mStickX = mMarStartX;
-                    mStickY = mMarStartY;
-                } else if (y > mMarEndY) {
-                    mStickX = mMarEndX;
-                    mStickY = mMarEndY;
-                }
-            } else {
-                if (y < mMarEndY) {
-                    mStickX = mMarEndX;
-                    mStickY = mMarEndY;
-                } else if (y > mMarStartY) {
-                    mStickX = mMarStartX;
-                    mStickY = mMarStartY;
-                }
-            }
-
+            onPlace(x,y);
             return DRAW_INVALIDATE_WITH_FALSE;
         }
 
         return DRAW_FALSE;
     }
 
-    abstract float onXAxis();
-    abstract float onYAxis();
+    abstract void onPlace(float x, float y);
 }
