@@ -1,26 +1,22 @@
 package good.damn.marqueeview.utils;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import good.damn.marqueeview.models.LineConfig;
+import good.damn.marqueeview.models.EntityConfig;
 
 public class FileUtils {
 
     private static final String TAG = "FileUtils";
 
-    public static void mkSVCFile(Context context, LinkedList<LineConfig> lineConfigs) {
+    public static void mkSVCFile(Context context, LinkedList<EntityConfig> entityConfigs) {
 
         FileOutputStream fos;
 
@@ -34,9 +30,9 @@ public class FileUtils {
 
             fos = new FileOutputStream(file);
 
-            fos.write(lineConfigs.size()); // vectors size
+            fos.write(entityConfigs.size()); // vectors size
 
-            for (LineConfig l: lineConfigs) {
+            for (EntityConfig l: entityConfigs) {
                 fos.write(0);
                 fos.write(ByteUtils.fixedPointNumber(l.fromX));
                 fos.write(ByteUtils.fixedPointNumber(l.fromY));
@@ -53,8 +49,8 @@ public class FileUtils {
         }
     }
 
-    public static LineConfig[] retrieveSVCFile(Context context) {
-        LineConfig[] lineConfigs = null;
+    public static EntityConfig[] retrieveSVCFile(Context context) {
+        EntityConfig[] entityConfigs = null;
         try {
             FileInputStream fis = new FileInputStream(context.getCacheDir()+"/dumb.svc");
 
@@ -63,11 +59,11 @@ public class FileUtils {
             byte[] shortBuffer = new byte[2];
             byte[] intBuffer = new byte[4];
 
-            lineConfigs = new LineConfig[countVectors];
+            entityConfigs = new EntityConfig[countVectors];
 
-            for (byte i = 0; i < lineConfigs.length; i++) {
-                lineConfigs[i] = new LineConfig();
-                LineConfig c = lineConfigs[i];
+            for (byte i = 0; i < entityConfigs.length; i++) {
+                entityConfigs[i] = new EntityConfig();
+                EntityConfig c = entityConfigs[i];
 
                 byte vectorType = (byte) fis.read();
 
@@ -95,6 +91,6 @@ public class FileUtils {
             e.printStackTrace();
         }
 
-        return lineConfigs;
+        return entityConfigs;
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,7 +16,9 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import good.damn.marqueeview.activities.PreviewActivity;
-import good.damn.marqueeview.models.LineConfig;
+import good.damn.marqueeview.graphics.editor.EntityEditor;
+import good.damn.marqueeview.graphics.editor.LineEditor;
+import good.damn.marqueeview.models.EntityConfig;
 import good.damn.marqueeview.utils.FileUtils;
 
 public class MarqueeEditorView extends View implements View.OnTouchListener {
@@ -28,7 +29,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     private final Paint mPaint = new Paint();
     private final Paint mPaintCircle = new Paint();
 
-    private final LinkedList<LineConfig> mLineConfigs = new LinkedList<>();
+    private final LinkedList<EntityConfig> mEntityConfigs = new LinkedList<>();
 
     private float mFromX;
     private float mFromY;
@@ -36,6 +37,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     private float mToX;
     private float mToY;
 
+    private LineEditor mEntityEditor;
 
     private void init() {
 
@@ -44,6 +46,8 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
         mPaintCircle.setColor(0xff00ff59);
+
+        mEntityEditor = new LineEditor(mPaintCircle,mPaint);
 
         setOnTouchListener(this);
     }
@@ -64,22 +68,22 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     }
 
     public void setLineColor(@ColorInt int color) {
-        mPaintCircle.setColor(color);
+        mEntityEditor.setColor(color);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        for (LineConfig position: mLineConfigs) {
-            float sX = position.fromX*getWidth();
-            float sY = position.fromY*getHeight();
-            canvas.drawLine(sX, sY, position.toX * getWidth(), position.toY*getHeight(), mPaint);
-            canvas.drawCircle(sX, sY, mPaint.getStrokeWidth(),mPaintCircle);
+        for (EntityConfig config: mEntityConfigs) { // already places entities
+            float sX = config.fromX*getWidth();
+            float sY = config.fromY*getHeight();
+
+            config.entity.draw(canvas, sX, sY, config.toX * getWidth(), config.toY*getHeight());
         }
 
-        canvas.drawLine(mFromX, mFromY, mToX, mToY, mPaint);
-        canvas.drawCircle(mFromX, mFromY, mPaint.getStrokeWidth(),mPaintCircle);
+        // For new placing entity
+        mEntityEditor.draw(canvas,mFromX,mFromY, mToX, mToY);
     }
 
     @Override
@@ -89,8 +93,8 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
 
                 if (event.getX() > getWidth() - 100 && event.getY() < 100) { // Undo previous action
-                    if (mLineConfigs.size() != 0) {
-                        mLineConfigs.removeLast();
+                    if (mEntityConfigs.size() != 0) {
+                        mEntityConfigs.removeLast();
                     }
                     mFromX = 0;
                     mFromY = 0;
@@ -103,7 +107,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
 
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
 
-                    FileUtils.mkSVCFile(getContext(), mLineConfigs);
+                    FileUtils.mkSVCFile(getContext(), mEntityConfigs);
                     Intent intent = new Intent(getContext(), PreviewActivity.class);
                     getContext().startActivity(intent);
 
@@ -119,14 +123,16 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                LineConfig config = new LineConfig(
+                EntityConfig config = new EntityConfig(
                         mFromX / getWidth(),
                         mFromY / getHeight(),
                         mToX / getWidth(),
                         mToY / getHeight());
-                config.color = mPaintCircle.getColor();
-                mLineConfigs.add(config);
-                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mLineConfigs.size());
+
+                config.entity = mEntityEditor.copy();
+                config.color = mEntityEditor.getColor();
+                mEntityConfigs.add(config);
+                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEntityConfigs.size());
                 break;
         }
 

@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import good.damn.marqueeview.interfaces.OnMarqueeFinishListener;
 import good.damn.marqueeview.graphics.Line;
-import good.damn.marqueeview.models.LineConfig;
+import good.damn.marqueeview.models.EntityConfig;
 
 public class MarqueeView extends View implements View.OnTouchListener {
 
@@ -22,7 +22,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
     private boolean mIsFinished = false;
 
     private Line[] mLines;
-    private LineConfig[] mLineConfigs;
+    private EntityConfig[] mEntityConfigs;
 
     private Line mCurrentLineTouching;
 
@@ -32,10 +32,10 @@ public class MarqueeView extends View implements View.OnTouchListener {
             return;
         }
 
-        LineConfig c;
+        EntityConfig c;
 
-        for (byte i = 0; i < mLineConfigs.length; i++) {
-            c = mLineConfigs[i];
+        for (byte i = 0; i < mEntityConfigs.length; i++) {
+            c = mEntityConfigs[i];
             mLines[i].onLayout(getWidth(), getHeight(),
                     c.fromX,c.fromY,c.toX,c.toY);
         }
@@ -72,18 +72,18 @@ public class MarqueeView extends View implements View.OnTouchListener {
         invalidate();
     }
 
-    public void setVectorsSource(LineConfig[] lineConfigs) {
+    public void setVectorsSource(EntityConfig[] entityConfigs) {
         setOnTouchListener(null);
 
-        mLines = new Line[lineConfigs.length];
+        mLines = new Line[entityConfigs.length];
 
         for (byte i = 0; i < mLines.length;i++) {
             mLines[i] = new Line();
-            mLines[i].setColor(lineConfigs[i].color);
-            mLines[i].setStrokeWidth(lineConfigs[i].strokeWidth);
+            mLines[i].setColor(entityConfigs[i].color);
+            mLines[i].setStrokeWidth(entityConfigs[i].strokeWidth);
         }
 
-        mLineConfigs = lineConfigs;
+        mEntityConfigs = entityConfigs;
 
         calculate();
 
@@ -111,7 +111,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (mLineConfigs == null) {
+        if (mEntityConfigs == null) {
             return;
         }
 

@@ -1,6 +1,8 @@
 package good.damn.marqueeview.models;
 
-public class LineConfig {
+import good.damn.marqueeview.graphics.editor.EntityEditor;
+
+public class EntityConfig {
     public float fromX;
     public float fromY;
 
@@ -10,9 +12,11 @@ public class LineConfig {
     public int color = 0xffff0000;
     public byte strokeWidth = 15;
 
-    public LineConfig() {}
+    public EntityEditor entity;
 
-    public LineConfig(float fx, float fy, float tx, float ty) {
+    public EntityConfig() {}
+
+    public EntityConfig(float fx, float fy, float tx, float ty) {
         fromX = fx;
         fromY = fy;
         toX = tx;
