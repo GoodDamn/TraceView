@@ -16,6 +16,8 @@ public abstract class Entity {
 
     protected final Random mRandom = new Random();
 
+    protected final boolean RELEASE_MODE = true;
+
     protected final Paint mPaintForeground = new Paint();
     protected final Paint mPaintBackground = new Paint();
     protected final Paint mPaintDebug = new Paint();
@@ -33,7 +35,7 @@ public abstract class Entity {
     protected float mStickX = 0;
     protected float mStickY = 0;
 
-    protected float mProgress = 0;
+    protected float mProgress = 0.01f;
 
     public Entity() {
         mPaintForeground.setColor(0xff00ff59);
@@ -74,7 +76,7 @@ public abstract class Entity {
         mStickX = mMarStartX;
         mStickY = mMarStartY;
 
-        mProgress = 0;
+        mProgress = 0.01f;
     }
 
     public void onLayout(int width, int height,

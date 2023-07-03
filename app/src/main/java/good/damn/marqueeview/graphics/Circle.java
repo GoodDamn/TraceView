@@ -37,7 +37,11 @@ public class Circle extends Entity {
                 mMarStartY+mRadius,
                 0,360*mProgress,
                 false, mPaintForeground);
-        canvas.drawCircle(mStickX, mStickY, mPaintBackground.getStrokeWidth(), mPaintForeground);
+
+        if (RELEASE_MODE) {
+            return;
+        }
+
         super.onDraw(canvas); // debug mode
 
         canvas.drawCircle(mDebugStickX, mDebugStickY, mPaintBackground.getStrokeWidth(), mPaintDebug);
@@ -54,7 +58,13 @@ public class Circle extends Entity {
         super.onLayout(width, height, startX, startY, endX, endY);
         mRadius = (float) Math.hypot(mMarEndX-mMarStartX, mMarEndY-mMarStartY);
         mStickX = mMarStartX + mRadius;
-        
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        mStickX = mMarStartX + mRadius;
+        mAngle = 0;
     }
 
     @Override
@@ -70,7 +80,7 @@ public class Circle extends Entity {
             ang = 360 + ang;
         }
 
-        if (ang > 270 && mAngle < 90) {
+        if (ang > 135 && mAngle < 90) {
             ang = 1;
         }
 

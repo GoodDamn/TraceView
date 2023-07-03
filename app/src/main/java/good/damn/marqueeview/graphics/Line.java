@@ -22,9 +22,6 @@ public class Line extends Entity {
                 mPaintBackground);
 
         canvas.drawLine(mMarStartX, mMarStartY, mStickX, mStickY, mPaintForeground);
-        canvas.drawCircle(mStickX,mStickY, mPaintForeground.getStrokeWidth(), mPaintForeground);
-
-        super.onDraw(canvas);
     }
 
     @Override
