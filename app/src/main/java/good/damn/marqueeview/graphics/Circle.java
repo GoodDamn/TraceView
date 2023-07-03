@@ -64,16 +64,22 @@ public class Circle extends Entity {
         float localX = x - mMarStartX;
         float localY = y - mMarStartY;
 
-        mAngle = (float) Math.toDegrees(Math.atan2(localY,localX));
+        float ang = (float) Math.toDegrees(Math.atan2(localY,localX));
 
-        if (mAngle < 0) {
-            mAngle = 360 + mAngle;
+        if (ang < 0) {
+            ang = 360 + ang;
         }
 
+        if (ang > 270 && mAngle < 90) {
+            ang = 1;
+        }
+
+
+        mAngle = ang;
         mProgress = mAngle / 360;
 
-        float sin = (float) Math.sin(mAngle * 0.015625f);
-        float cos = (float) Math.cos(mAngle * 0.015625f);
+        float sin = (float) Math.sin(mAngle * 0.016625f);
+        float cos = (float) Math.cos(mAngle * 0.016625f);
 
         mDebugStickX = (float) (mMarStartX + mRadius*cos);
         mDebugStickY = (float) (mMarStartY + mRadius*sin);
