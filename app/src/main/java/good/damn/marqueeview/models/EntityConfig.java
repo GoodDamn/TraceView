@@ -10,9 +10,6 @@ public class EntityConfig {
     public float toX;
     public float toY;
 
-    public int color = 0xffff0000;
-    public byte strokeWidth = 15;
-
     public Entity entity;
 
     public EntityConfig() {}

@@ -47,8 +47,8 @@ public class FileUtils {
                 fos.write(ByteUtils.fixedPointNumber(l.fromY));
                 fos.write(ByteUtils.fixedPointNumber(l.toX));
                 fos.write(ByteUtils.fixedPointNumber(l.toY));
-                fos.write(ByteUtils.integer(l.color));
-                fos.write(l.strokeWidth);
+                fos.write(ByteUtils.integer(l.entityEditor.getColor()));
+                fos.write(l.entityEditor.getStrokeWidth());
             }
 
             fos.close();
@@ -88,12 +88,6 @@ public class FileUtils {
                 fis.read(shortBuffer);
                 c.toY = ByteUtils.fixedPointNumber(shortBuffer);
 
-                fis.read(intBuffer);
-                c.color = ByteUtils.integer(intBuffer);
-                Log.d(TAG, "retrieveSVCFile: COLOR: FROM: " + Arrays.toString(intBuffer) + " TO: " + c.color);
-
-                c.strokeWidth = (byte) fis.read();
-
                 switch (vectorType) {
                     case 0:
                         c.entity = new Line();
@@ -103,8 +97,12 @@ public class FileUtils {
                         break;
                 }
 
-                c.entity.setColor(c.color);
-                c.entity.setStrokeWidth(c.strokeWidth);
+                fis.read(intBuffer);
+                c.entity.setColor(ByteUtils.integer(intBuffer));
+                Log.d(TAG, "retrieveSVCFile: COLOR: FROM: " + Arrays.toString(intBuffer) + " TO: " + c.entity.getColor());
+
+                c.entity.setStrokeWidth((byte) fis.read());
+
             }
 
             fis.close();

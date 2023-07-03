@@ -28,6 +28,10 @@ public abstract class EntityEditor {
         return mPaintForeground.getColor();
     }
 
+    public byte getStrokeWidth() {
+        return (byte) mPaintBackground.getStrokeWidth();
+    }
+
     public abstract EntityEditor copy();
 
     public abstract void draw(Canvas canvas, float fromX, float fromY, float toX, float toY);

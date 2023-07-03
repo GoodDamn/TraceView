@@ -55,6 +55,10 @@ public abstract class Entity {
         mPaintForeground.setColor(color);
     }
 
+    public int getColor() {
+        return mPaintForeground.getColor();
+    }
+
     public float getProgress() {
         return mProgress;
     }

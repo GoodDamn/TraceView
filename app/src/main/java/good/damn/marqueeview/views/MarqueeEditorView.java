@@ -27,8 +27,8 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     private static final String TAG = "MarqueeEditorView";
     private static final Random mRandom = new Random();
 
-    private final Paint mPaint = new Paint();
-    private final Paint mPaintCircle = new Paint();
+    private final Paint mPaintBackground = new Paint();
+    private final Paint mPaintForeground = new Paint();
 
     private final LinkedList<EditorConfig> mEditorConfigs = new LinkedList<>();
 
@@ -42,13 +42,13 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
 
     private void init() {
 
-        mPaint.setColor(0x55ffffff);
-        mPaint.setStrokeWidth(15.0f);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaintBackground.setColor(0x55ffffff);
+        mPaintBackground.setStrokeWidth(15.0f);
+        mPaintBackground.setStrokeCap(Paint.Cap.ROUND);
 
-        mPaintCircle.setColor(0xff00ff59);
+        mPaintForeground.setColor(0xff00ff59);
 
-        mEntityEditor = new LineEditor(mPaintCircle,mPaint);
+        mEntityEditor = new LineEditor(mPaintForeground, mPaintBackground);
 
         setOnTouchListener(this);
     }
@@ -69,6 +69,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
     }
 
     public void setLineColor(@ColorInt int color) {
+        mPaintForeground.setColor(color);
         mEntityEditor.setColor(color);
     }
 
@@ -88,15 +89,15 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
 
         // Draw icons:
         // Triangle
-        canvas.drawLine(25,25,25,75,mPaint);
-        canvas.drawLine(25,75,75,50,mPaint);
-        canvas.drawLine(75,50,25,25,mPaint);
+        canvas.drawLine(25,25,25,75, mPaintBackground);
+        canvas.drawLine(25,75,75,50, mPaintBackground);
+        canvas.drawLine(75,50,25,25, mPaintBackground);
 
         // Circle
-        canvas.drawCircle(150,50,25,mPaint);
+        canvas.drawCircle(150,50,25, mPaintBackground);
 
         // Line
-        canvas.drawLine(225, 75,275,25,mPaint);
+        canvas.drawLine(225, 75,275,25, mPaintBackground);
     }
 
     @Override
@@ -119,12 +120,12 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                 }
 
                 if (event.getX() > 100 && event.getX() < 200 && event.getY() < 100) { // draw circles
-                    mEntityEditor = new CircleEditor(mPaintCircle, mPaint);
+                    mEntityEditor = new CircleEditor(mPaintForeground, mPaintBackground);
                     return false;
                 }
 
                 if (event.getX() > 200 && event.getX() < 300 && event.getY() < 100) { // draw Line
-                    mEntityEditor = new LineEditor(mPaintCircle, mPaint);
+                    mEntityEditor = new LineEditor(mPaintForeground, mPaintBackground);
                     return false;
                 }
 
@@ -153,7 +154,7 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
                         mToY / getHeight());
 
                 config.entityEditor = mEntityEditor.copy();
-                config.color = mEntityEditor.getColor();
+                config.entityEditor.setColor(mEntityEditor.getColor());
                 mEditorConfigs.add(config);
                 Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEditorConfigs.size());
                 break;
