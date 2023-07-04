@@ -1,5 +1,5 @@
-# MarqueeView
-Marquee view for advanced user interaction with vector graphics
+# TraceView
+Trace view for advanced user interaction with vector graphics
 
 Demo:
 
