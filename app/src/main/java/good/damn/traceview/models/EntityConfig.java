@@ -1,7 +1,6 @@
-package good.damn.marqueeview.models;
+package good.damn.traceview.models;
 
-import good.damn.marqueeview.graphics.Entity;
-import good.damn.marqueeview.graphics.editor.EntityEditor;
+import good.damn.traceview.graphics.Entity;
 
 public class EntityConfig {
     public float fromX;

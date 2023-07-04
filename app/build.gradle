@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'good.damn.marqueeview'
+    namespace 'good.damn.traceview'
     compileSdk 33
 
     defaultConfig {
-        applicationId "good.damn.marqueeview"
+        applicationId "good.damn.traceview"
         minSdk 21
         targetSdk 33
         versionCode 1

@@ -1,4 +1,4 @@
-package good.damn.marqueeview.activities;
+package good.damn.traceview.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 
 import good.damn.gradient_color_picker.GradientColorPicker;
 import good.damn.gradient_color_picker.OnPickColorListener;
-import good.damn.marqueeview.views.MarqueeEditorView;
+import good.damn.traceview.views.TraceEditorView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MarqueeEditorView editorView = new MarqueeEditorView(this);
+        TraceEditorView editorView = new TraceEditorView(this);
         editorView.setBackgroundColor(0);
 
         GradientColorPicker colorPicker = new GradientColorPicker(this);

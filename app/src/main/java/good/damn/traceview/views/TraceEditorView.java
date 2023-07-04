@@ -1,4 +1,4 @@
-package good.damn.marqueeview.views;
+package good.damn.traceview.views;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,14 +15,14 @@ import androidx.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.Random;
 
-import good.damn.marqueeview.activities.PreviewActivity;
-import good.damn.marqueeview.graphics.editor.CircleEditor;
-import good.damn.marqueeview.graphics.editor.EntityEditor;
-import good.damn.marqueeview.graphics.editor.LineEditor;
-import good.damn.marqueeview.models.EditorConfig;
-import good.damn.marqueeview.utils.FileUtils;
+import good.damn.traceview.activities.PreviewActivity;
+import good.damn.traceview.graphics.editor.CircleEditor;
+import good.damn.traceview.graphics.editor.EntityEditor;
+import good.damn.traceview.graphics.editor.LineEditor;
+import good.damn.traceview.models.EditorConfig;
+import good.damn.traceview.utils.FileUtils;
 
-public class MarqueeEditorView extends View implements View.OnTouchListener {
+public class TraceEditorView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeEditorView";
     private static final Random mRandom = new Random();
@@ -53,17 +53,17 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
         setOnTouchListener(this);
     }
 
-    public MarqueeEditorView(Context context) {
+    public TraceEditorView(Context context) {
         super(context);
         init();
     }
 
-    public MarqueeEditorView(Context context, @Nullable AttributeSet attrs) {
+    public TraceEditorView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public MarqueeEditorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TraceEditorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

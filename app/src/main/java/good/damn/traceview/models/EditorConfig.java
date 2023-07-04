@@ -1,6 +1,6 @@
-package good.damn.marqueeview.models;
+package good.damn.traceview.models;
 
-import good.damn.marqueeview.graphics.editor.EntityEditor;
+import good.damn.traceview.graphics.editor.EntityEditor;
 
 public class EditorConfig extends EntityConfig {
     public EntityEditor entityEditor;

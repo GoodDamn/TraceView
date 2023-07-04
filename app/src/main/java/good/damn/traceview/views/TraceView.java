@@ -1,4 +1,4 @@
-package good.damn.marqueeview.views;
+package good.damn.traceview.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,12 +9,12 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import good.damn.marqueeview.graphics.Entity;
-import good.damn.marqueeview.interfaces.OnMarqueeFinishListener;
-import good.damn.marqueeview.graphics.Line;
-import good.damn.marqueeview.models.EntityConfig;
+import good.damn.traceview.graphics.Entity;
+import good.damn.traceview.interfaces.OnMarqueeFinishListener;
+import good.damn.traceview.graphics.Line;
+import good.damn.traceview.models.EntityConfig;
 
-public class MarqueeView extends View implements View.OnTouchListener {
+public class TraceView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
 
@@ -44,17 +44,17 @@ public class MarqueeView extends View implements View.OnTouchListener {
         setOnTouchListener(this);
     }
 
-    public MarqueeView(Context context) {
+    public TraceView(Context context) {
         super(context);
         init();
     }
 
-    public MarqueeView(Context context, @Nullable AttributeSet attrs) {
+    public TraceView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public MarqueeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TraceView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

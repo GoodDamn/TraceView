@@ -1,11 +1,7 @@
-package good.damn.marqueeview.graphics;
+package good.damn.traceview.graphics;
 
-import android.app.appsearch.SearchResult;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
-
-import com.google.android.material.radiobutton.MaterialRadioButton;
 
 public class Circle extends Entity {
 

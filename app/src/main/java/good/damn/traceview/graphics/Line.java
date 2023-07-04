@@ -1,11 +1,6 @@
-package good.damn.marqueeview.graphics;
+package good.damn.traceview.graphics;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.util.Log;
-import android.view.MotionEvent;
-
-import java.util.Random;
 
 public class Line extends Entity {
 

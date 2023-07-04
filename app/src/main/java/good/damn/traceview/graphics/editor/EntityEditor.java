@@ -1,10 +1,9 @@
-package good.damn.marqueeview.graphics.editor;
+package good.damn.traceview.graphics.editor;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 public abstract class EntityEditor {
 

@@ -1,4 +1,4 @@
-package good.damn.marqueeview;
+package good.damn.traceview;
 
 import android.content.Context;
 

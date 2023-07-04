@@ -1,4 +1,4 @@
-package good.damn.marqueeview.utils;
+package good.damn.traceview.utils;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import good.damn.marqueeview.graphics.Circle;
-import good.damn.marqueeview.graphics.Line;
-import good.damn.marqueeview.graphics.editor.CircleEditor;
-import good.damn.marqueeview.models.EditorConfig;
-import good.damn.marqueeview.models.EntityConfig;
+import good.damn.traceview.graphics.Circle;
+import good.damn.traceview.graphics.Line;
+import good.damn.traceview.graphics.editor.CircleEditor;
+import good.damn.traceview.models.EditorConfig;
+import good.damn.traceview.models.EntityConfig;
 
 public class FileUtils {
 

@@ -1,4 +1,4 @@
-package good.damn.marqueeview.utils;
+package good.damn.traceview.utils;
 
 import android.util.Log;
 
