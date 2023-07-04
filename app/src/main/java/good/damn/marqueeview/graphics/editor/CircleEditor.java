@@ -24,6 +24,6 @@ public class CircleEditor extends EntityEditor{
                 fromY+radius,
                 0,360,false,mPaintBackground);
 
-        canvas.drawCircle(fromX-radius,fromY,mPaintBackground.getStrokeWidth(),mPaintForeground);
+        canvas.drawCircle(fromX+radius,fromY,mPaintBackground.getStrokeWidth(),mPaintForeground);
     }
 }

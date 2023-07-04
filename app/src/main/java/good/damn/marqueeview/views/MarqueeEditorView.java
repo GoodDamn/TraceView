@@ -89,12 +89,12 @@ public class MarqueeEditorView extends View implements View.OnTouchListener {
 
         // Draw icons:
         // Triangle
-        canvas.drawLine(25,25,25,75, mPaintBackground);
-        canvas.drawLine(25,75,75,50, mPaintBackground);
-        canvas.drawLine(75,50,25,25, mPaintBackground);
+        canvas.drawLine(25,25,25,75, mPaintForeground);
+        canvas.drawLine(25,75,75,50, mPaintForeground);
+        canvas.drawLine(75,50,25,25, mPaintForeground);
 
         // Circle
-        canvas.drawCircle(150,50,25, mPaintBackground);
+        canvas.drawCircle(150,50,25, mPaintForeground);
 
         // Line
         canvas.drawLine(225, 75,275,25, mPaintBackground);

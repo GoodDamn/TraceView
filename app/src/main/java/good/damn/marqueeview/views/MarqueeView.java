@@ -18,6 +18,8 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
 
+    protected final float COMPLETE_PROGRESS_TRIGGER = 0.97f;
+
     private OnMarqueeFinishListener mOnMarqueeFinishListener;
 
     private boolean mIsFinished = false;
@@ -153,7 +155,7 @@ public class MarqueeView extends View implements View.OnTouchListener {
 
                 for (EntityConfig c : mEntityConfigs) {
                     Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + c.entity.getProgress());
-                    if (c.entity.getProgress() < 0.95)
+                    if (c.entity.getProgress() < COMPLETE_PROGRESS_TRIGGER)
                         return false;
                 }
 
