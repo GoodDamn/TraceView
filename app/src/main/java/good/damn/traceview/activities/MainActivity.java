@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private int moveToPos = 0;
+    private int moveToPos;
 
     private BlockedViewPager mViewPager;
     final Runnable mPagerRunnable = () -> mViewPager.setCurrentItem(moveToPos);
@@ -32,18 +32,21 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setId(ViewCompat.generateViewId());
 
         VectorEditorFragment editorFragment = new VectorEditorFragment();
+        PreviewFragment previewFragment = new PreviewFragment();
+
         editorFragment.setOnStartClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: CURRENT_ITEM: ");
                 moveToPos = 1;
                 mViewPager.post(mPagerRunnable);
+                previewFragment.startPreview();
             }
         });
 
         final Fragment[] fragments = new Fragment[]{
                 editorFragment,
-                new PreviewFragment()
+                previewFragment
         };
 
         mViewPager.setOffscreenPageLimit(2);

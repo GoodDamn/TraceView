@@ -78,6 +78,7 @@ public class TraceView extends View implements View.OnTouchListener {
         calculate();
 
         setOnTouchListener(this);
+        invalidate();
     }
 
     public void setOnTraceFinishListener(OnTraceFinishListener finishListener) {

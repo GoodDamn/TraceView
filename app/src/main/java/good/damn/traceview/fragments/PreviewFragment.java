@@ -17,26 +17,31 @@ import good.damn.traceview.views.TraceView;
 
 public class PreviewFragment extends Fragment {
 
+    private TraceView mTraceView;
+
+    public void startPreview() {
+        mTraceView.setVectorsSource(FileUtils.retrieveSVCFile(getContext()));
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         Context context = getContext();
 
-        TraceView traceView = new TraceView(context);
-        traceView.setBackgroundColor(0);
-        traceView.setVectorsSource(FileUtils.retrieveSVCFile(context));
+        mTraceView = new TraceView(context);
+        mTraceView.setBackgroundColor(0);
 
-        traceView.setOnTraceFinishListener(new OnTraceFinishListener() {
+        mTraceView.setOnTraceFinishListener(new OnTraceFinishListener() {
             @Override
             public void onFinish() {
-                traceView.restart();
+                mTraceView.restart();
                 Toast.makeText(context,
                                 "MARQUEE FINISHED!",
                                 Toast.LENGTH_SHORT)
                         .show();
             }
         });
-        return traceView;
+        return mTraceView;
     }
 }
