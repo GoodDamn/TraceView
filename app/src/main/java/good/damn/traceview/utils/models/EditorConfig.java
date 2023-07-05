@@ -1,4 +1,4 @@
-package good.damn.traceview.models;
+package good.damn.traceview.utils.models;
 
 import good.damn.traceview.graphics.editor.EntityEditor;
 

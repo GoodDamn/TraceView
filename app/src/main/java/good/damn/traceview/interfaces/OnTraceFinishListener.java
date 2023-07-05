@@ -1,6 +1,6 @@
 package good.damn.traceview.interfaces;
 
-public interface OnMarqueeFinishListener {
+public interface OnTraceFinishListener {
 
     void onFinish();
 }

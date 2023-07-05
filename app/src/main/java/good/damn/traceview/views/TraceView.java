@@ -10,9 +10,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import good.damn.traceview.graphics.Entity;
-import good.damn.traceview.interfaces.OnMarqueeFinishListener;
 import good.damn.traceview.graphics.Line;
-import good.damn.traceview.models.EntityConfig;
+import good.damn.traceview.interfaces.OnTraceFinishListener;
+import good.damn.traceview.utils.models.EntityConfig;
 
 public class TraceView extends View implements View.OnTouchListener {
 
@@ -20,7 +20,7 @@ public class TraceView extends View implements View.OnTouchListener {
 
     protected final float COMPLETE_PROGRESS_TRIGGER = 0.97f;
 
-    private OnMarqueeFinishListener mOnMarqueeFinishListener;
+    private OnTraceFinishListener mOnTraceFinishListener;
 
     private boolean mIsFinished = false;
 
@@ -80,8 +80,8 @@ public class TraceView extends View implements View.OnTouchListener {
         setOnTouchListener(this);
     }
 
-    public void setOnMarqueeFinishListener(OnMarqueeFinishListener  finishListener) {
-        mOnMarqueeFinishListener = finishListener;
+    public void setOnTraceFinishListener(OnTraceFinishListener finishListener) {
+        mOnTraceFinishListener = finishListener;
     }
 
     @Override
@@ -161,8 +161,8 @@ public class TraceView extends View implements View.OnTouchListener {
 
                 mIsFinished = true;
 
-                if (mOnMarqueeFinishListener != null) {
-                    mOnMarqueeFinishListener.onFinish();
+                if (mOnTraceFinishListener != null) {
+                    mOnTraceFinishListener.onFinish();
                 }
 
                 break;

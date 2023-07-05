@@ -15,17 +15,15 @@ import androidx.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.Random;
 
-import good.damn.traceview.activities.PreviewActivity;
 import good.damn.traceview.graphics.editor.CircleEditor;
 import good.damn.traceview.graphics.editor.EntityEditor;
 import good.damn.traceview.graphics.editor.LineEditor;
-import good.damn.traceview.models.EditorConfig;
 import good.damn.traceview.utils.FileUtils;
+import good.damn.traceview.utils.models.EditorConfig;
 
 public class TraceEditorView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeEditorView";
-    private static final Random mRandom = new Random();
 
     private final Paint mPaintBackground = new Paint();
     private final Paint mPaintForeground = new Paint();
@@ -39,6 +37,8 @@ public class TraceEditorView extends View implements View.OnTouchListener {
     private float mToY;
 
     private EntityEditor mEntityEditor;
+
+    private View.OnClickListener mOnStartClickListener;
 
     private void init() {
 
@@ -66,6 +66,10 @@ public class TraceEditorView extends View implements View.OnTouchListener {
     public TraceEditorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public void setOnStartClickListener(View.OnClickListener onClickListener) {
+        mOnStartClickListener = onClickListener;
     }
 
     public void setLineColor(@ColorInt int color) {
@@ -130,11 +134,8 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                 }
 
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
-
                     FileUtils.mkSVCFile(getContext(), mEditorConfigs);
-                    Intent intent = new Intent(getContext(), PreviewActivity.class);
-                    getContext().startActivity(intent);
-
+                    mOnStartClickListener.onClick(null);
                     return false;
                 }
 

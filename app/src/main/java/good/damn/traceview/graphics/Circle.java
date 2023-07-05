@@ -31,13 +31,11 @@ public class Circle extends Entity {
                 0,360*mProgress,
                 false, mPaintForeground);
 
-        super.onDraw(canvas); // debug mode
         if (RELEASE_MODE) {
             return;
         }
 
-
-
+        super.onDraw(canvas); // debug mode
 
         canvas.drawCircle(mMarStartX, mMarStartY, 5, mPaintDebug);
         canvas.drawLine(mMarStartX-mRadius,mMarStartY,mMarStartX+mRadius,mMarStartY,mPaintDebug);

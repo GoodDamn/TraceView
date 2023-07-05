@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import good.damn.traceview.graphics.Circle;
 import good.damn.traceview.graphics.Line;
 import good.damn.traceview.graphics.editor.CircleEditor;
-import good.damn.traceview.models.EditorConfig;
-import good.damn.traceview.models.EntityConfig;
+import good.damn.traceview.utils.models.EditorConfig;
+import good.damn.traceview.utils.models.EntityConfig;
 
 public class FileUtils {
 
