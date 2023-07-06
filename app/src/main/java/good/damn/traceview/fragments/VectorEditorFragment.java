@@ -18,9 +18,9 @@ import good.damn.traceview.views.TraceEditorView;
 
 public class VectorEditorFragment extends Fragment {
 
-    private View.OnClickListener mOnStartClickListener;
+    private TraceEditorView.OnClickIconListener mOnStartClickListener;
 
-    public void setOnStartClickListener(View.OnClickListener onClickListener) {
+    public void setOnStartClickListener(TraceEditorView.OnClickIconListener onClickListener) {
         mOnStartClickListener = onClickListener;
     }
 

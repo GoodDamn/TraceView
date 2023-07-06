@@ -19,8 +19,8 @@ public class PreviewFragment extends Fragment {
 
     private TraceView mTraceView;
 
-    public void startPreview() {
-        mTraceView.setVectorsSource(FileUtils.retrieveSVCFile(getContext()));
+    public void startPreview(String path) {
+        mTraceView.setVectorsSource(FileUtils.retrieveSVCFile(path,getContext()));
     }
 
     @Nullable
@@ -42,6 +42,7 @@ public class PreviewFragment extends Fragment {
                         .show();
             }
         });
+
         return mTraceView;
     }
 }

@@ -10,11 +10,16 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import java.util.LinkedList;
+
 import good.damn.traceview.fragments.PreviewFragment;
 import good.damn.traceview.fragments.VectorEditorFragment;
+import good.damn.traceview.utils.FileUtils;
+import good.damn.traceview.utils.models.EditorConfig;
 import good.damn.traceview.views.BlockedViewPager;
+import good.damn.traceview.views.TraceEditorView;
 
-public class MainActivity extends AppCompatActivity {
+public class VectorActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -22,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
     private BlockedViewPager mViewPager;
     final Runnable mPagerRunnable = () -> mViewPager.setCurrentItem(moveToPos);
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +38,16 @@ public class MainActivity extends AppCompatActivity {
         VectorEditorFragment editorFragment = new VectorEditorFragment();
         PreviewFragment previewFragment = new PreviewFragment();
 
-        editorFragment.setOnStartClickListener(new View.OnClickListener() {
+        editorFragment.setOnStartClickListener(new TraceEditorView.OnClickIconListener() {
             @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: CURRENT_ITEM: ");
+            public void onClick(LinkedList<EditorConfig> editorConfigs) {
+                String path = "/dumb.svc";
+                FileUtils.mkSVCFile(editorConfigs,
+                        path,
+                        VectorActivity.this);
                 moveToPos = 1;
                 mViewPager.post(mPagerRunnable);
-                previewFragment.startPreview();
+                previewFragment.startPreview(path);
             }
         });
 

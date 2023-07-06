@@ -1,7 +1,6 @@
 package good.damn.traceview.views;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -13,7 +12,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import java.util.LinkedList;
-import java.util.Random;
 
 import good.damn.traceview.graphics.editor.CircleEditor;
 import good.damn.traceview.graphics.editor.EntityEditor;
@@ -38,7 +36,7 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
     private EntityEditor mEntityEditor;
 
-    private View.OnClickListener mOnStartClickListener;
+    private OnClickIconListener mOnStartClickListener;
 
     private void init() {
 
@@ -68,7 +66,7 @@ public class TraceEditorView extends View implements View.OnTouchListener {
         init();
     }
 
-    public void setOnStartClickListener(View.OnClickListener onClickListener) {
+    public void setOnStartClickListener(OnClickIconListener onClickListener) {
         mOnStartClickListener = onClickListener;
     }
 
@@ -134,8 +132,7 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                 }
 
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
-                    FileUtils.mkSVCFile(getContext(), mEditorConfigs);
-                    mOnStartClickListener.onClick(null);
+                    mOnStartClickListener.onClick(mEditorConfigs);
                     return false;
                 }
 
@@ -162,5 +159,9 @@ public class TraceEditorView extends View implements View.OnTouchListener {
         }
 
         return true;
+    }
+
+    public interface OnClickIconListener {
+        void onClick(LinkedList<EditorConfig> editorConfigs);
     }
 }
