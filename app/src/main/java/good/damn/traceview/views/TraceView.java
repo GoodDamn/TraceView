@@ -122,6 +122,12 @@ public class TraceView extends View implements View.OnTouchListener {
                 mCurrentEntityTouch = null;
 
                 for (EntityConfig c : mEntityConfigs) {
+
+                    if (!c.entity.hasPivot()) {
+                        c.entity.onSetupPivotPoint(x,y);
+                        invalidate();
+                    }
+
                     if (c.entity.checkCollide(x,y)) {
                         mCurrentEntityTouch = c.entity;
                         break;

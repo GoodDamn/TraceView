@@ -29,13 +29,15 @@ public abstract class Entity {
     protected float mMarEndX = 1;
     protected float mMarEndY = 0;
 
-    protected int mWidth = 1;
-    protected int mHeight = 1;
-
     protected float mStickX = 0;
     protected float mStickY = 0;
 
-    protected float mProgress = 0.01f;
+    protected float mProgress = 0f;
+
+    protected int mWidth = 1;
+    protected int mHeight = 1;
+
+    protected boolean mHasPivot = false;
 
     public Entity() {
         mPaintForeground.setColor(0xff00ff59);
@@ -80,7 +82,9 @@ public abstract class Entity {
         mStickX = mMarStartX;
         mStickY = mMarStartY;
 
-        mProgress = 0.01f;
+        mHasPivot = false;
+
+        mProgress = 0;
     }
 
     public void onLayout(int width, int height,
@@ -124,6 +128,12 @@ public abstract class Entity {
 
         return DRAW_FALSE;
     }
+
+    public boolean hasPivot() {
+        return mHasPivot;
+    }
+
+    public void onSetupPivotPoint(float x, float y){}
 
     abstract void onPlace(float x, float y);
 }
