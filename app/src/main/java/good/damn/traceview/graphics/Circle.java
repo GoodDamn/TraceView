@@ -104,8 +104,8 @@ public class Circle extends Entity {
         float lY = y - mMarStartY;
 
         // Project to local rotated coordinate system
-        float localX = (float) (lX * mStartAngleCos + lY * mStartAngleSin);
-        float localY = (float) (-lX * mStartAngleSin + lY * mStartAngleCos);
+        float localX = lX * mStartAngleCos + lY * mStartAngleSin;
+        float localY = -lX * mStartAngleSin + lY * mStartAngleCos;
 
         // Get angle
         float rad = (float) (Math.atan2(localY,localX));
