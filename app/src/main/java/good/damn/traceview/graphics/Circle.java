@@ -2,6 +2,7 @@ package good.damn.traceview.graphics;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.Log;
 
 import good.damn.traceview.utils.Maths;
@@ -9,6 +10,8 @@ import good.damn.traceview.utils.Maths;
 public class Circle extends Entity {
 
     private static final String TAG = "Circle";
+
+    private final RectF mRectFArc = new RectF();
 
     private float mRadius;
     private float mAngle = 0;
@@ -25,18 +28,8 @@ public class Circle extends Entity {
 
     @Override
     public void onDraw(Canvas canvas) {
-        canvas.drawArc(mMarStartX-mRadius,
-                mMarStartY-mRadius,
-                mMarStartX+mRadius,
-                mMarStartY+mRadius,
-                0,360,
-                false,mPaintBackground);
-        canvas.drawArc(mMarStartX-mRadius,
-                mMarStartY-mRadius,
-                mMarStartX+mRadius,
-                mMarStartY+mRadius,
-                mStartAngle,360*mProgress,
-                false, mPaintForeground);
+        canvas.drawArc(mRectFArc, 0,360, false,mPaintBackground);
+        canvas.drawArc(mRectFArc, mStartAngle,360*mProgress, false, mPaintForeground);
 
         if (!RELEASE_MODE) {
             return;
@@ -60,6 +53,11 @@ public class Circle extends Entity {
         mRadius = (float) Math.hypot(mMarEndX-mMarStartX, mMarEndY-mMarStartY);
         mStickX = mMarStartX + mRadius;
         mPivotPointTrigger = mPaintBackground.getStrokeWidth() * 1.5f;
+
+        mRectFArc.left = mMarStartX-mRadius;
+        mRectFArc.top = mMarStartY-mRadius;
+        mRectFArc.right = mMarStartX+mRadius;
+        mRectFArc.bottom = mMarStartY+mRadius;
     }
 
     @Override
