@@ -123,7 +123,7 @@ public class Circle extends Entity {
 
         rad = (float) Math.toRadians(mStartAngle+mAngle);
 
-        // Rotate on stick depend on mAngle on global coordiante system
+        // Rotate stick depend on mAngle on global coordinate system
         mStickX = (float) (mMarStartX + mRadius*Math.cos(rad));
         mStickY = (float) (mMarStartY + mRadius*Math.sin(rad));
     }

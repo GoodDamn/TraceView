@@ -73,4 +73,9 @@ public class Line extends Entity {
             }
         }
     }
+
+    @Override
+    public void onSetupPivotPoint(float x, float y) {
+        mHasPivot = true;
+    }
 }
