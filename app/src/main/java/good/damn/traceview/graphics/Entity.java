@@ -62,7 +62,7 @@ public abstract class Entity {
     }
 
     public float getProgress() {
-        return mProgress;
+        return Math.abs(mProgress);
     }
 
     public void setStrokeWidth(byte width) {

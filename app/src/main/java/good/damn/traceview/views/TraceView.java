@@ -18,7 +18,7 @@ public class TraceView extends View implements View.OnTouchListener {
 
     private static final String TAG = "MarqueeView";
 
-    protected final float COMPLETE_PROGRESS_TRIGGER = 0.97f;
+    protected final float COMPLETE_PROGRESS_TRIGGER = 0.95f;
 
     private OnTraceFinishListener mOnTraceFinishListener;
 

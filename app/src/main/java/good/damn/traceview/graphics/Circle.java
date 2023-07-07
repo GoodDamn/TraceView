@@ -15,6 +15,8 @@ public class Circle extends Entity {
     private float mStartAngle = 0;
     private float mStartAngleRadians = 0;
 
+    private float mPivotPointTrigger = 5.0f;
+
     public Circle() {
         super();
         mPaintBackground.setStyle(Paint.Style.STROKE);
@@ -46,6 +48,9 @@ public class Circle extends Entity {
         canvas.drawLine(mMarStartX-mRadius,mMarStartY,mMarStartX+mRadius,mMarStartY,mPaintDebug);
         canvas.drawLine(mMarStartX,mMarStartY-mRadius,mMarStartX,mMarStartY+mRadius,mPaintDebug);
 
+        canvas.drawCircle(mMarStartX, mMarStartY, mRadius-mPivotPointTrigger, mPaintDebug);
+        canvas.drawCircle(mMarStartX, mMarStartY, mRadius+mPivotPointTrigger, mPaintDebug);
+
         canvas.drawText("ANG: " + mAngle, mStickX-mStickBound,mStickY-mStickBound-mPaintDebug.getTextSize()*4, mPaintDebug);
     }
 
@@ -54,6 +59,7 @@ public class Circle extends Entity {
         super.onLayout(width, height, startX, startY, endX, endY);
         mRadius = (float) Math.hypot(mMarEndX-mMarStartX, mMarEndY-mMarStartY);
         mStickX = mMarStartX + mRadius;
+        mPivotPointTrigger = mPaintBackground.getStrokeWidth() * 1.5f;
     }
 
     @Override
@@ -68,12 +74,8 @@ public class Circle extends Entity {
         float x = gx - mMarStartX;
         float y = gy - mMarStartY;
         float radius = x * x + y * y;
-        float r = mPaintBackground.getStrokeWidth() / 2;
-        Log.d(TAG, "onSetupPivotPoint: -------------------");
-        Log.d(TAG, "onSetupPivotPoint: X: " +x + " Y:" + y);
-        Log.d(TAG, "onSetupPivotPoint: RAD-5: " + Maths.sqr(mRadius-r) + " RAD: "+ radius +" RAD+5: " + Maths.sqr(mRadius+r));
-        Log.d(TAG, "onSetupPivotPoint: -------------------");
-        if (Maths.sqr(mRadius-r) < radius && radius < Maths.sqr(mRadius+r)) {
+        if (Maths.sqr(mRadius-mPivotPointTrigger) < radius
+                && radius < Maths.sqr(mRadius+mPivotPointTrigger)) {
 
             float ang = (float) Math.atan2(y,x);
             mStartAngle = (float) Math.toDegrees(ang);
@@ -105,16 +107,10 @@ public class Circle extends Entity {
         float rad = (float) (Math.atan2(localY,localX));
         float ang = (float) Math.toDegrees(rad);
 
-        if (ang < 0) {
+        if (ang < 0 && mAngle > 80) {
             ang = 360 + ang;
-        }
-
-        if (mProgress > 0.98f && ang < 90) { // trace is completed. Not again, please
-            return;
-        }
-
-        if (ang > 135 && mAngle < 90) {
-            ang = 1;
+        } else if (ang > 0 && mAngle < -80) {
+            ang = -180 - (180-ang);
         }
 
         mAngle = ang;
