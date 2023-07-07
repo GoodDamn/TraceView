@@ -18,6 +18,9 @@ public class Circle extends Entity {
     private float mStartAngle = 0;
     private float mStartAngleRadians = 0;
 
+    private float mStartAngleSin = 0;
+    private float mStartAngleCos = 0;
+
     private float mPivotPointTrigger = 5.0f;
 
     public Circle() {
@@ -31,7 +34,7 @@ public class Circle extends Entity {
         canvas.drawArc(mRectFArc, 0,360, false,mPaintBackground);
         canvas.drawArc(mRectFArc, mStartAngle,360*mProgress, false, mPaintForeground);
 
-        if (!RELEASE_MODE) {
+        if (RELEASE_MODE) {
             return;
         }
 
@@ -80,6 +83,9 @@ public class Circle extends Entity {
 
             mStartAngleRadians = (float) Math.toRadians(mStartAngle);
 
+            mStartAngleSin = (float) Math.sin(mStartAngleRadians);
+            mStartAngleCos = (float) Math.cos(mStartAngleRadians);
+
             mStickX = (float) (mMarStartX + mRadius * Math.cos(ang));
             mStickY = (float) (mMarStartY + mRadius * Math.sin(ang));
 
@@ -93,18 +99,19 @@ public class Circle extends Entity {
     void onPlace(float x, float y) {
         // Shit-code below (mStickX, mStickY, mProgress)
 
+        // Project to local coordinate system
         float lX = x - mMarStartX;
         float lY = y - mMarStartY;
 
-        float s = (float) Math.sin(mStartAngleRadians);
-        float c = (float) Math.cos(mStartAngleRadians);
+        // Project to local rotated coordinate system
+        float localX = (float) (lX * mStartAngleCos + lY * mStartAngleSin);
+        float localY = (float) (-lX * mStartAngleSin + lY * mStartAngleCos);
 
-        float localX = (float) (lX * c + lY * s);
-        float localY = (float) (-lX * s + lY * c);
-
+        // Get angle
         float rad = (float) (Math.atan2(localY,localX));
         float ang = (float) Math.toDegrees(rad);
 
+        // Check sides
         if (ang < 0 && mAngle > 80) {
             ang = 360 + ang;
         } else if (ang > 0 && mAngle < -80) {
@@ -116,10 +123,8 @@ public class Circle extends Entity {
 
         rad = (float) Math.toRadians(mStartAngle+mAngle);
 
-        s = (float) Math.sin(rad);
-        c = (float) Math.cos(rad);
-
-        mStickX = mMarStartX + mRadius*c;
-        mStickY = mMarStartY + mRadius*s;
+        // Rotate on stick depend on mAngle on global coordiante system
+        mStickX = (float) (mMarStartX + mRadius*Math.cos(rad));
+        mStickY = (float) (mMarStartY + mRadius*Math.sin(rad));
     }
 }
