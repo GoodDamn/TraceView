@@ -12,9 +12,6 @@ public class Line extends Entity {
 
     private float mGradient = 0;
 
-    private float mDebugStickX = 0;
-    private float mDebugStickY = 0;
-
     private float mStartXFor;
     private float mStartYFor;
 
@@ -32,7 +29,7 @@ public class Line extends Entity {
 
         canvas.drawLine(mStartXFor, mStartYFor, mStickX, mStickY, mPaintForeground);
 
-        if (!RELEASE_MODE) {
+        if (RELEASE_MODE) {
             return;
         }
 
@@ -48,7 +45,7 @@ public class Line extends Entity {
                 mMarEndY,
                 mPaintDebug);
 
-        canvas.drawCircle(mDebugStickX, mDebugStickY, 20,mPaintDebug);
+        canvas.drawCircle(mStartXFor, mStartYFor, 20,mPaintDebug);
     }
 
     @Override
@@ -56,8 +53,6 @@ public class Line extends Entity {
         super.onLayout(width, height, startX, startY, endX, endY);
         deltaX = mMarEndX - mMarStartX;
         deltaY = mMarEndY - mMarStartY;
-
-        mProgress = 0;
 
         mStartXFor = mMarStartX;
         mStartYFor = mMarStartY;
@@ -76,18 +71,18 @@ public class Line extends Entity {
 
         Log.d(TAG, "onSetupPivotPoint: EXPRESSION: " + exp);
 
-        if (-20 < exp && exp < 20
-            && mMarStartX < x && x < mMarEndX
-            && mMarStartY < y && y < mMarEndY) {
+        if (!(-20 < exp && exp < 20)) {
+            return;
+        }
 
-            mDebugStickX = x + exp;
-            mDebugStickY = y + exp;
+        if (Math.hypot(x-mMarEndX, y-mMarEndY) < 20
+            || Math.hypot(x-mMarStartX, y-mMarStartY) < 20) {
 
-            mStartXFor = mDebugStickX;
-            mStartYFor = mDebugStickY;
+            mStartXFor = x;
+            mStartYFor = y;
 
-            mStickX = mStartXFor + 1;
-            mStickY = mStartYFor + 1;
+            mStickX = mStartXFor;
+            mStickY = mStartYFor;
 
             mHasPivot = true;
         }
@@ -99,11 +94,11 @@ public class Line extends Entity {
         if (isXBigger) {
             mStickX = x;
 
-            mProgress = (x - mMarStartX) / deltaX;
+            mProgress = (x - mStartXFor) / deltaX;
 
-            mStickY = mMarStartY + mProgress * deltaY;
+            mStickY = mStartYFor + mProgress * deltaY;
 
-            if (mMarStartX < mMarEndX) {
+            /*if (mMarStartX < mMarEndX) {
                 if (x < mMarStartX) {
                     mStickX = mMarStartX;
                     mStickY = mMarStartY;
@@ -119,15 +114,15 @@ public class Line extends Entity {
                     mStickX = mMarStartX;
                     mStickY = mMarStartY;
                 }
-            }
+            }*/
 
             return;
         }
 
-        mProgress = (y - mMarStartY) / deltaY;
-        mStickX = mMarStartX + mProgress * deltaX;
+        mProgress = (y - mStartYFor) / deltaY;
+        mStickX = mStartXFor + mProgress * deltaX;
         mStickY = y;
-        if (mMarStartY < mMarEndY) {
+        /*if (mMarStartY < mMarEndY) {
             if (y < mMarStartY) {
                 mStickX = mMarStartX;
                 mStickY = mMarStartY;
@@ -143,6 +138,6 @@ public class Line extends Entity {
                 mStickX = mMarStartX;
                 mStickY = mMarStartY;
             }
-        }
+        }*/
     }
 }
