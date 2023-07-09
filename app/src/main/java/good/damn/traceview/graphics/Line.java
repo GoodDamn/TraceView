@@ -27,23 +27,25 @@ public class Line extends Entity {
                 mMarEndY,
                 mPaintBackground);
 
-        canvas.drawLine(mStartXFor, mStartYFor, mStickX, mStickY, mPaintForeground);
+        if (mHasPivot) {
+            canvas.drawLine(mStartXFor, mStartYFor, mStickX, mStickY, mPaintForeground);
+        }
 
         if (RELEASE_MODE) {
             return;
         }
 
-        canvas.drawLine(mMarStartX + 10,
-                mMarStartY,
-                mMarEndX + 10,
-                mMarEndY,
-                mPaintDebug);
+        super.onDraw(canvas);
 
-        canvas.drawLine(mMarStartX - 10,
-                mMarStartY,
-                mMarEndX - 10,
-                mMarEndY,
-                mPaintDebug);
+        canvas.drawRect(mMarStartX-mStickBound,
+                mMarStartY-mStickBound,
+                    mMarStartX+mStickBound,
+                    mMarStartY+mStickBound, mPaintDebug);
+
+        canvas.drawRect(mMarEndX-mStickBound,
+                mMarEndY-mStickBound,
+                mMarEndX+mStickBound,
+                mMarEndY+mStickBound, mPaintDebug);
 
         canvas.drawCircle(mStartXFor, mStartYFor, 20,mPaintDebug);
     }
@@ -67,19 +69,28 @@ public class Line extends Entity {
     @Override
     public void onSetupPivotPoint(float x, float y) {
 
-        float exp = y - mMarStartY - mGradient * (x - mMarStartX);
+        /*float exp = y - mMarStartY - mGradient * (x - mMarStartX);
 
         Log.d(TAG, "onSetupPivotPoint: EXPRESSION: " + exp);
 
         if (!(-20 < exp && exp < 20)) {
             return;
-        }
+        }*/
 
-        if (Math.hypot(x-mMarEndX, y-mMarEndY) < 20
-            || Math.hypot(x-mMarStartX, y-mMarStartY) < 20) {
+        if (mMarEndX-mStickBound < x && x < mMarEndX+mStickBound &&
+            mMarEndY-mStickBound < y && y < mMarEndY+mStickBound) {
 
-            mStartXFor = x;
-            mStartYFor = y;
+            mStartXFor = mMarEndX;
+            mStartYFor = mMarEndY;
+
+            mStickX = mStartXFor;
+            mStickY = mStartYFor;
+
+            mHasPivot = true;
+        } else if (mMarStartX-mStickBound < x && x < mMarStartX+mStickBound &&
+                mMarStartY-mStickBound < y && y < mMarStartY+mStickBound) {
+            mStartXFor = mMarStartX;
+            mStartYFor = mMarStartY;
 
             mStickX = mStartXFor;
             mStickY = mStartYFor;
@@ -92,52 +103,39 @@ public class Line extends Entity {
     void onPlace(float x, float y) {
 
         if (isXBigger) {
-            mStickX = x;
-
             mProgress = (x - mStartXFor) / deltaX;
 
+            Log.d(TAG, "onPlace: PROGRESS_DELTA_X_CHECK: >1.0f: " + (mProgress > 1.0f) + " <-1.0f: " + (mProgress < -1.0f) + " PROGRESS: " + mProgress);
+            if (mProgress > 1.0f) {
+                mProgress = 1.0f;
+                x = mStickX;
+            } else if (mProgress < -1.0f) {
+                mProgress = -1.0f;
+                x = mStickX;
+            }
+
+            Log.d(TAG, "onPlace: PROGRESS_DELTA_X: " + mProgress + " START_Y: " + mStartXFor);
+
             mStickY = mStartYFor + mProgress * deltaY;
-
-            /*if (mMarStartX < mMarEndX) {
-                if (x < mMarStartX) {
-                    mStickX = mMarStartX;
-                    mStickY = mMarStartY;
-                } else if (x > mMarEndX) {
-                    mStickX = mMarEndX;
-                    mStickY = mMarEndY;
-                }
-            } else {
-                if (x < mMarEndX) {
-                    mStickX = mMarEndX;
-                    mStickY = mMarEndY;
-                } else if (x > mMarStartX) {
-                    mStickX = mMarStartX;
-                    mStickY = mMarStartY;
-                }
-            }*/
-
+            mStickX = x;
             return;
         }
 
         mProgress = (y - mStartYFor) / deltaY;
+
+        Log.d(TAG, "onPlace: PROGRESS_DELTA_Y_CHECK: >1.0f: " + (mProgress > 1.0f) + " <-1.0f: " + (mProgress < -1.0f) + " PROGRESS: " + mProgress);
+
+        if (mProgress > 1.0f) {
+            mProgress = 1.0f;
+            y = mStickY;
+        } else if (mProgress < -1.0f) {
+            mProgress = -1.0f;
+            y = mStickY;
+        }
+
+        Log.d(TAG, "onPlace: PROGRESS_DELTA_Y: " + mProgress + " START_X: " + mStartXFor);
+
         mStickX = mStartXFor + mProgress * deltaX;
         mStickY = y;
-        /*if (mMarStartY < mMarEndY) {
-            if (y < mMarStartY) {
-                mStickX = mMarStartX;
-                mStickY = mMarStartY;
-            } else if (y > mMarEndY) {
-                mStickX = mMarEndX;
-                mStickY = mMarEndY;
-            }
-        } else {
-            if (y < mMarEndY) {
-                mStickX = mMarEndX;
-                mStickY = mMarEndY;
-            } else if (y > mMarStartY) {
-                mStickX = mMarStartX;
-                mStickY = mMarStartY;
-            }
-        }*/
     }
 }
