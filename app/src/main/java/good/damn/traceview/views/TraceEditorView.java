@@ -28,15 +28,21 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
     private final LinkedList<EditorConfig> mEditorConfigs = new LinkedList<>();
 
+    private EntityEditor mEntityEditor;
+
+    private OnClickIconListener mOnStartClickListener;
+
     private float mFromX;
     private float mFromY;
 
     private float mToX;
     private float mToY;
 
-    private EntityEditor mEntityEditor;
+    private float mMinStrokeWidthY = 1;
+    private float mMaxStrokeWidthY = 127;
+    private float mCurrentStrokeWidthY = 0;
 
-    private OnClickIconListener mOnStartClickListener;
+    private boolean mDoesStrokeEdit = false;
 
     private void init() {
 
@@ -76,8 +82,21 @@ public class TraceEditorView extends View implements View.OnTouchListener {
     }
 
     @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        int mid = getHeight() >> 1;
+        mMinStrokeWidthY = mid - 200;
+        mMaxStrokeWidthY = 200 + mid;
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        canvas.drawLine(0,mMinStrokeWidthY, 50, mMaxStrokeWidthY, mPaintForeground);
+        canvas.drawLine(50,mMaxStrokeWidthY, 0, mMaxStrokeWidthY, mPaintForeground);
+
+        canvas.drawCircle(0,mCurrentStrokeWidthY, 15, mPaintForeground);
 
         for (EditorConfig config: mEditorConfigs) { // already places entities
             float sX = config.fromX*getWidth();
@@ -136,15 +155,35 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                     return false;
                 }
 
+                if (event.getX() < 50
+                    && event.getY() > mMinStrokeWidthY
+                    && event.getY() < mMaxStrokeWidthY) {
+                    mDoesStrokeEdit = true;
+                    return true;
+                }
+
                 mFromX = event.getX();
                 mFromY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (mDoesStrokeEdit) {
+                    float cur = (event.getY() - mMinStrokeWidthY) / (mMaxStrokeWidthY-mMinStrokeWidthY);
+                    mCurrentStrokeWidthY = mMinStrokeWidthY + cur * 400;
+                    mEntityEditor.setStrokeWidth((byte) (cur * 127));
+                    Log.d(TAG, "onTouch: STROKE_EDIT: " + mEntityEditor.getStrokeWidth());
+                    invalidate();
+                    break;
+                }
+
                 mToX = event.getX();
                 mToY = event.getY();
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
+                if (mDoesStrokeEdit) {
+                    mDoesStrokeEdit = false;
+                    break;
+                }
                 EditorConfig config = new EditorConfig(
                         mFromX / getWidth(),
                         mFromY / getHeight(),
@@ -152,7 +191,6 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                         mToY / getHeight());
 
                 config.entityEditor = mEntityEditor.copy();
-                config.entityEditor.setColor(mEntityEditor.getColor());
                 mEditorConfigs.add(config);
                 Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEditorConfigs.size());
                 break;

@@ -23,6 +23,10 @@ public abstract class EntityEditor {
         mPaintForeground.setColor(color);
     }
 
+    public void setStrokeWidth(byte strokeWidth) {
+        mPaintBackground.setStrokeWidth(strokeWidth);
+    }
+
     public int getColor() {
         return mPaintForeground.getColor();
     }

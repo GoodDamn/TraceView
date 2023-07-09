@@ -67,6 +67,7 @@ public abstract class Entity {
 
     public void setStrokeWidth(byte width) {
         mPaintForeground.setStrokeWidth(width);
+        mPaintBackground.setStrokeWidth(width);
     }
 
     public boolean checkCollide(float x, float y) {

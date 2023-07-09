@@ -10,8 +10,6 @@ public class Line extends Entity {
     private float deltaX = 0;
     private float deltaY = 0;
 
-    private float mGradient = 0;
-
     private float mStartXFor;
     private float mStartYFor;
 
@@ -59,11 +57,7 @@ public class Line extends Entity {
         mStartXFor = mMarStartX;
         mStartYFor = mMarStartY;
 
-        mGradient = deltaY / deltaX;
-
-        Log.d(TAG, "onLayout: GRADIENT: " + mGradient);
         isXBigger = Math.abs(deltaY) < Math.abs(deltaX);
-
     }
 
     @Override
