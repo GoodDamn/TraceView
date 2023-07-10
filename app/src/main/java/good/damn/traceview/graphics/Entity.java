@@ -24,10 +24,10 @@ public abstract class Entity {
 
     protected final int mStickBound = 50;
 
-    protected float mMarStartX = 0;
-    protected float mMarStartY = 0;
-    protected float mMarEndX = 1;
-    protected float mMarEndY = 0;
+    protected float mTraceStartX = 0;
+    protected float mTraceStartY = 0;
+    protected float mTraceEndX = 1;
+    protected float mTraceEndY = 0;
 
     protected float mStickX = 0;
     protected float mStickY = 0;
@@ -76,8 +76,8 @@ public abstract class Entity {
     }
 
     public void reset() {
-        mStickX = mMarStartX;
-        mStickY = mMarStartY;
+        mStickX = mTraceStartX;
+        mStickY = mTraceStartY;
 
         mHasPivot = false;
 
@@ -91,14 +91,14 @@ public abstract class Entity {
         mWidth = width;
         mHeight = height;
 
-        mMarStartX = width * startX;
-        mMarStartY = height * startY;
+        mTraceStartX = width * startX;
+        mTraceStartY = height * startY;
 
-        mMarEndX = width * endX;
-        mMarEndY = height * endY;
+        mTraceEndX = width * endX;
+        mTraceEndY = height * endY;
 
-        mStickX = mMarStartX;
-        mStickY = mMarStartY;
+        mStickX = mTraceStartX;
+        mStickY = mTraceStartY;
     }
 
 

@@ -3,8 +3,6 @@ package good.damn.traceview.graphics;
 import android.graphics.Canvas;
 import android.util.Log;
 
-import java.security.AlgorithmConstraints;
-
 public class Line extends Entity {
 
     private static final String TAG = "Line";
@@ -14,6 +12,11 @@ public class Line extends Entity {
 
     private float mStartXFor;
     private float mStartYFor;
+
+    private float minX;
+    private float minY;
+    private float maxX;
+    private float maxY;
 
     private float mGradient;
 
@@ -25,10 +28,10 @@ public class Line extends Entity {
     public void onDraw(Canvas canvas) {
         // Background line
         canvas.drawLine(
-                mMarStartX,
-                mMarStartY,
-                mMarEndX,
-                mMarEndY,
+                mTraceStartX,
+                mTraceStartY,
+                mTraceEndX,
+                mTraceEndY,
                 mPaintBackground);
 
         if (mHasPivot) {
@@ -51,10 +54,10 @@ public class Line extends Entity {
         canvas.drawCircle(mStartXFor, mStartYFor, 1, mPaintDebug);
         canvas.drawCircle(mStartXFor, mStartYFor, 20, mPaintDebug);
 
-        canvas.drawLine(mMarStartX,
-                mMarStartY,
-                mMarEndX,
-                mMarEndY,
+        canvas.drawLine(mTraceStartX,
+                mTraceStartY,
+                mTraceEndX,
+                mTraceEndY,
                 mPaintDebug);
 
         canvas.drawCircle(mStartXFor, mStartYFor, 20,mPaintDebug);
@@ -63,22 +66,35 @@ public class Line extends Entity {
     @Override
     public void onLayout(int width, int height, float startX, float startY, float endX, float endY) {
         super.onLayout(width, height, startX, startY, endX, endY);
-        deltaX = mMarEndX - mMarStartX;
-        deltaY = mMarEndY - mMarStartY;
+        deltaX = mTraceEndX - mTraceStartX;
+        deltaY = mTraceEndY - mTraceStartY;
 
-        mStartXFor = mMarStartX;
-        mStartYFor = mMarStartY;
+        mStartXFor = mTraceStartX;
+        mStartYFor = mTraceStartY;
 
         mGradient = deltaY / deltaX;
+
+        Log.d(TAG, "onLayout: GRADIENT: " + mGradient);
 
         mLineLength = (float) Math.hypot(deltaX,deltaY);
 
         mIsXBigger = Math.abs(deltaY) < Math.abs(deltaX);
+
+        minX = Math.min(mTraceStartX, mTraceEndX);
+        minY = Math.min(mTraceStartY, mTraceEndY);
+
+        maxX = Math.max(mTraceStartX, mTraceEndX);
+        maxY = Math.max(mTraceStartY, mTraceEndY);
     }
 
     @Override
     public boolean checkCollide(float x, float y) {
-        if (mHasPivot && boxBound(x,y,mStartXFor, mStartYFor)) {
+
+        if (!mHasPivot) {
+            return false;
+        }
+
+        if (boxBound(x,y,mStartXFor, mStartYFor)) {
             mDoesItTouchPivot = true;
             return true;
         }
@@ -99,8 +115,25 @@ public class Line extends Entity {
     @Override
     public void onSetupPivotPoint(float x, float y) {
 
-        float dy = y - mMarStartY;
-        float dx = x - mMarStartX;
+        if (!(minX < x && x < maxX
+                && minY < y && y < maxY)
+        ) { // Out of bounds
+            return;
+        }
+
+        float dy = y - mTraceStartY;
+        float dx = x - mTraceStartX;
+
+        if (Math.abs(mGradient) > 15) { // Y is longer(bigger)
+            mStartXFor = dy / deltaY * deltaX + mTraceStartX;
+            mStartYFor = y;
+
+            mStickX = mStartXFor;
+            mStickY = mStartYFor;
+
+            mHasPivot = true;
+            return;
+        }
 
         float eq = dy - mGradient * dx;
 
@@ -109,9 +142,9 @@ public class Line extends Entity {
         if (-50 < eq && eq < 50) {
             if (mIsXBigger) {
                 mStartXFor = x;
-                mStartYFor = dx / deltaX * deltaY + mMarStartY;
+                mStartYFor = dx / deltaX * deltaY + mTraceStartY;
             } else {
-                mStartXFor = dy / deltaY * deltaX + mMarStartX;
+                mStartXFor = dy / deltaY * deltaX + mTraceStartX;
                 mStartYFor = y;
             }
 
@@ -129,27 +162,121 @@ public class Line extends Entity {
 
     @Override
     void onPlace(float x, float y) {
+
         if (mDoesItTouchPivot) {
             if (mIsXBigger) {
                 mStartXFor = x;
-                mStartYFor = mMarStartY + (x - mMarStartX) / deltaX * deltaY;
+                mStartYFor = mTraceStartY + (x - mTraceStartX) / deltaX * deltaY;
+
+                //////////////////////////////!!!!!!
+                if (mTraceStartX < mTraceEndX) {
+                    if (x < mTraceStartX) {
+                        mStartXFor = mTraceStartX;
+                        mStartYFor = mTraceStartY;
+                    } else if (x > mTraceEndX) {
+                        mStartXFor = mTraceEndX;
+                        mStartYFor = mTraceEndY;
+                    }
+
+                } else {
+                    if (x < mTraceEndX) {
+                        mStartXFor = mTraceEndX;
+                        mStartYFor = mTraceEndY;
+                    } else if (x > mTraceStartX) {
+                        mStartXFor = mTraceStartX;
+                        mStartYFor = mTraceStartY;
+                    }
+                }
+                ////////////////////////!!!!!
+
             } else {
-                mStartXFor = mMarStartX + (y - mMarStartY) / deltaY * deltaX;
+                mStartXFor = mTraceStartX + (y - mTraceStartY) / deltaY * deltaX;
                 mStartYFor = y;
+
+                //////////////////////////////!!!!!!
+                if (mTraceStartY < mTraceEndY) {
+                    if (y < mTraceStartY) {
+                        mStartXFor = mTraceStartX;
+                        mStartYFor = mTraceStartY;
+                    } else if (y > mTraceEndY) {
+                        mStartXFor = mTraceEndX;
+                        mStartYFor = mTraceEndY;
+                    }
+
+                } else {
+                    if (y < mTraceEndY) {
+                        mStartXFor = mTraceEndX;
+                        mStartYFor = mTraceEndY;
+                    } else if (y > mTraceStartY) {
+                        mStartXFor = mTraceStartX;
+                        mStartYFor = mTraceStartY;
+                    }
+                }
+                ////////////////////////!!!!!
+
             }
+
+
             float length = (float) Math.hypot(mStartXFor-mStickX, mStartYFor-mStickY);
             mProgress = length / mLineLength;
             Log.d(TAG, "onPlace: PROGRESS::"+mProgress + " LENGTH: " + length + " LINE_LENGTH:" + mLineLength);
             return;
         }
 
+        // REFACTOR SHIT CODE WITH CHECKING COLLISION LIMIT!!!!!!
+
         if (mIsXBigger) {
-            mStickY = mMarStartY + (x - mMarStartX) / deltaX * deltaY;
+            mStickY = mTraceStartY + (x - mTraceStartX) / deltaX * deltaY;
             mStickX = x;
+
+            //////////////////////////////!!!!!!
+            if (mTraceStartX < mTraceEndX) {
+                if (x < mTraceStartX) {
+                    mStickX = mTraceStartX;
+                    mStickY = mTraceStartY;
+                } else if (x > mTraceEndX) {
+                    mStickX = mTraceEndX;
+                    mStickY = mTraceEndY;
+                }
+
+            } else {
+                if (x < mTraceEndX) {
+                    mStickX = mTraceEndX;
+                    mStickY = mTraceEndY;
+                } else if (x > mTraceStartX) {
+                    mStickX = mTraceStartX;
+                    mStickY = mTraceStartY;
+                }
+            }
+            ////////////////////////!!!!!
+
         } else {
-            mStickX = mMarStartX + (y - mMarStartY) / deltaY * deltaX;
+            mStickX = mTraceStartX + (y - mTraceStartY) / deltaY * deltaX;
             mStickY = y;
+
+            //////////////////////////////!!!!!!
+            if (mTraceStartY < mTraceEndY) {
+                if (y < mTraceStartY) {
+                    mStickX = mTraceStartX;
+                    mStickY = mTraceStartY;
+                } else if (y > mTraceEndY) {
+                    mStickX = mTraceEndX;
+                    mStickY = mTraceEndY;
+                }
+
+            } else {
+                if (y < mTraceEndY) {
+                    mStickX = mTraceEndX;
+                    mStickY = mTraceEndY;
+                } else if (y > mTraceStartY) {
+                    mStickX = mTraceStartX;
+                    mStickY = mTraceStartY;
+                }
+            }
+            ////////////////////////!!!!!
+
         }
+
 
         float length = (float) Math.hypot(mStartXFor-mStickX, mStartYFor-mStickY);
         mProgress = length / mLineLength;

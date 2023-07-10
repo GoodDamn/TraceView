@@ -40,12 +40,12 @@ public class Circle extends Entity {
 
         super.onDraw(canvas); // debug mode
 
-        canvas.drawCircle(mMarStartX, mMarStartY, 5, mPaintDebug);
-        canvas.drawLine(mMarStartX-mRadius,mMarStartY,mMarStartX+mRadius,mMarStartY,mPaintDebug);
-        canvas.drawLine(mMarStartX,mMarStartY-mRadius,mMarStartX,mMarStartY+mRadius,mPaintDebug);
+        canvas.drawCircle(mTraceStartX, mTraceStartY, 5, mPaintDebug);
+        canvas.drawLine(mTraceStartX -mRadius, mTraceStartY, mTraceStartX +mRadius, mTraceStartY,mPaintDebug);
+        canvas.drawLine(mTraceStartX, mTraceStartY -mRadius, mTraceStartX, mTraceStartY +mRadius,mPaintDebug);
 
-        canvas.drawCircle(mMarStartX, mMarStartY, mRadius-mPivotPointTrigger, mPaintDebug);
-        canvas.drawCircle(mMarStartX, mMarStartY, mRadius+mPivotPointTrigger, mPaintDebug);
+        canvas.drawCircle(mTraceStartX, mTraceStartY, mRadius-mPivotPointTrigger, mPaintDebug);
+        canvas.drawCircle(mTraceStartX, mTraceStartY, mRadius+mPivotPointTrigger, mPaintDebug);
 
         canvas.drawText("ANG: " + mAngle, mStickX-mStickBound,mStickY-mStickBound-mPaintDebug.getTextSize()*4, mPaintDebug);
     }
@@ -53,27 +53,27 @@ public class Circle extends Entity {
     @Override
     public void onLayout(int width, int height, float startX, float startY, float endX, float endY) {
         super.onLayout(width, height, startX, startY, endX, endY);
-        mRadius = (float) Math.hypot(mMarEndX-mMarStartX, mMarEndY-mMarStartY);
-        mStickX = mMarStartX + mRadius;
+        mRadius = (float) Math.hypot(mTraceEndX - mTraceStartX, mTraceEndY - mTraceStartY);
+        mStickX = mTraceStartX + mRadius;
         mPivotPointTrigger = mPaintBackground.getStrokeWidth() * 1.5f;
 
-        mRectFArc.left = mMarStartX-mRadius;
-        mRectFArc.top = mMarStartY-mRadius;
-        mRectFArc.right = mMarStartX+mRadius;
-        mRectFArc.bottom = mMarStartY+mRadius;
+        mRectFArc.left = mTraceStartX -mRadius;
+        mRectFArc.top = mTraceStartY -mRadius;
+        mRectFArc.right = mTraceStartX +mRadius;
+        mRectFArc.bottom = mTraceStartY +mRadius;
     }
 
     @Override
     public void reset() {
         super.reset();
-        mStickX = mMarStartX + mRadius;
+        mStickX = mTraceStartX + mRadius;
         mAngle = 0;
     }
 
     @Override
     public void onSetupPivotPoint(float gx, float gy) {
-        float x = gx - mMarStartX;
-        float y = gy - mMarStartY;
+        float x = gx - mTraceStartX;
+        float y = gy - mTraceStartY;
         float radius = x * x + y * y;
         if (Maths.sqr(mRadius-mPivotPointTrigger) < radius
                 && radius < Maths.sqr(mRadius+mPivotPointTrigger)) {
@@ -86,8 +86,8 @@ public class Circle extends Entity {
             mStartAngleSin = (float) Math.sin(mStartAngleRadians);
             mStartAngleCos = (float) Math.cos(mStartAngleRadians);
 
-            mStickX = (float) (mMarStartX + mRadius * Math.cos(ang));
-            mStickY = (float) (mMarStartY + mRadius * Math.sin(ang));
+            mStickX = (float) (mTraceStartX + mRadius * Math.cos(ang));
+            mStickY = (float) (mTraceStartY + mRadius * Math.sin(ang));
 
             Log.d(TAG, "onSetupPivotPoint: HAS PIVOT: " + mStartAngle);
 
@@ -110,8 +110,8 @@ public class Circle extends Entity {
         // Shit-code below (mStickX, mStickY, mProgress)
 
         // Project to local coordinate system
-        float lX = x - mMarStartX;
-        float lY = y - mMarStartY;
+        float lX = x - mTraceStartX;
+        float lY = y - mTraceStartY;
 
         // Project to local rotated coordinate system
         float localX = lX * mStartAngleCos + lY * mStartAngleSin;
@@ -134,7 +134,7 @@ public class Circle extends Entity {
         rad = (float) Math.toRadians(mStartAngle+mAngle);
 
         // Rotate stick depend on mAngle on global coordinate system
-        mStickX = (float) (mMarStartX + mRadius*Math.cos(rad));
-        mStickY = (float) (mMarStartY + mRadius*Math.sin(rad));
+        mStickX = (float) (mTraceStartX + mRadius*Math.cos(rad));
+        mStickY = (float) (mTraceStartY + mRadius*Math.sin(rad));
     }
 }
