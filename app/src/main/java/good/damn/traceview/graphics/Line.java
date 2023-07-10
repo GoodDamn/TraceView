@@ -3,6 +3,8 @@ package good.damn.traceview.graphics;
 import android.graphics.Canvas;
 import android.util.Log;
 
+import java.security.AlgorithmConstraints;
+
 public class Line extends Entity {
 
     private static final String TAG = "Line";
@@ -13,7 +15,11 @@ public class Line extends Entity {
     private float mStartXFor;
     private float mStartYFor;
 
-    private boolean isXBigger = false;
+    private float mGradient;
+
+    private float mLineLength;
+    private boolean mIsXBigger = false;
+    private boolean mDoesItTouchPivot = false;
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -29,21 +35,27 @@ public class Line extends Entity {
             canvas.drawLine(mStartXFor, mStartYFor, mStickX, mStickY, mPaintForeground);
         }
 
-        if (RELEASE_MODE) {
+        if (!RELEASE_MODE) {
             return;
         }
 
         super.onDraw(canvas);
 
-        canvas.drawRect(mMarStartX-mStickBound,
-                mMarStartY-mStickBound,
-                    mMarStartX+mStickBound,
-                    mMarStartY+mStickBound, mPaintDebug);
+        if (mHasPivot) {
+            canvas.drawRect(mStartXFor-mStickBound,
+                    mStartYFor-mStickBound,
+                    mStartXFor+mStickBound,
+                    mStartYFor+mStickBound, mPaintDebug);
+        }
 
-        canvas.drawRect(mMarEndX-mStickBound,
-                mMarEndY-mStickBound,
-                mMarEndX+mStickBound,
-                mMarEndY+mStickBound, mPaintDebug);
+        canvas.drawCircle(mStartXFor, mStartYFor, 1, mPaintDebug);
+        canvas.drawCircle(mStartXFor, mStartYFor, 20, mPaintDebug);
+
+        canvas.drawLine(mMarStartX,
+                mMarStartY,
+                mMarEndX,
+                mMarEndY,
+                mPaintDebug);
 
         canvas.drawCircle(mStartXFor, mStartYFor, 20,mPaintDebug);
     }
@@ -57,34 +69,51 @@ public class Line extends Entity {
         mStartXFor = mMarStartX;
         mStartYFor = mMarStartY;
 
-        isXBigger = Math.abs(deltaY) < Math.abs(deltaX);
+        mGradient = deltaY / deltaX;
+
+        mLineLength = (float) Math.hypot(deltaX,deltaY);
+
+        mIsXBigger = Math.abs(deltaY) < Math.abs(deltaX);
+    }
+
+    @Override
+    public boolean checkCollide(float x, float y) {
+        if (mHasPivot && boxBound(x,y,mStartXFor, mStartYFor)) {
+            mDoesItTouchPivot = true;
+            return true;
+        }
+
+        return boxBound(x,y,mStickX,mStickY);
+    }
+
+    @Override
+    boolean checkDeltaInBounds(float x, float y) {
+        if (mDoesItTouchPivot) {
+            mDoesItTouchPivot = boxBound(x,y,mStartXFor,mStartYFor);
+            return mDoesItTouchPivot;
+        }
+
+        return boxBound(x,y,mStickX,mStickY);
     }
 
     @Override
     public void onSetupPivotPoint(float x, float y) {
 
-        /*float exp = y - mMarStartY - mGradient * (x - mMarStartX);
+        float dy = y - mMarStartY;
+        float dx = x - mMarStartX;
 
-        Log.d(TAG, "onSetupPivotPoint: EXPRESSION: " + exp);
+        float eq = dy - mGradient * dx;
 
-        if (!(-20 < exp && exp < 20)) {
-            return;
-        }*/
+        Log.d(TAG, "onSetupPivotPoint: EXPRESSION: " + eq);
 
-        if (mMarEndX-mStickBound < x && x < mMarEndX+mStickBound &&
-            mMarEndY-mStickBound < y && y < mMarEndY+mStickBound) {
-
-            mStartXFor = mMarEndX;
-            mStartYFor = mMarEndY;
-
-            mStickX = mStartXFor;
-            mStickY = mStartYFor;
-
-            mHasPivot = true;
-        } else if (mMarStartX-mStickBound < x && x < mMarStartX+mStickBound &&
-                mMarStartY-mStickBound < y && y < mMarStartY+mStickBound) {
-            mStartXFor = mMarStartX;
-            mStartYFor = mMarStartY;
+        if (-50 < eq && eq < 50) {
+            if (mIsXBigger) {
+                mStartXFor = x;
+                mStartYFor = dx / deltaX * deltaY + mMarStartY;
+            } else {
+                mStartXFor = dy / deltaY * deltaX + mMarStartX;
+                mStartYFor = y;
+            }
 
             mStickX = mStartXFor;
             mStickY = mStartYFor;
@@ -94,42 +123,37 @@ public class Line extends Entity {
     }
 
     @Override
+    public void onTouchUp() {
+        mDoesItTouchPivot = false;
+    }
+
+    @Override
     void onPlace(float x, float y) {
-
-        if (isXBigger) {
-            mProgress = (x - mStartXFor) / deltaX;
-
-            Log.d(TAG, "onPlace: PROGRESS_DELTA_X_CHECK: >1.0f: " + (mProgress > 1.0f) + " <-1.0f: " + (mProgress < -1.0f) + " PROGRESS: " + mProgress);
-            if (mProgress > 1.0f) {
-                mProgress = 1.0f;
-                x = mStickX;
-            } else if (mProgress < -1.0f) {
-                mProgress = -1.0f;
-                x = mStickX;
+        if (mDoesItTouchPivot) {
+            if (mIsXBigger) {
+                mStartXFor = x;
+                mStartYFor = mMarStartY + (x - mMarStartX) / deltaX * deltaY;
+            } else {
+                mStartXFor = mMarStartX + (y - mMarStartY) / deltaY * deltaX;
+                mStartYFor = y;
             }
-
-            Log.d(TAG, "onPlace: PROGRESS_DELTA_X: " + mProgress + " START_Y: " + mStartXFor);
-
-            mStickY = mStartYFor + mProgress * deltaY;
-            mStickX = x;
+            float length = (float) Math.hypot(mStartXFor-mStickX, mStartYFor-mStickY);
+            mProgress = length / mLineLength;
+            Log.d(TAG, "onPlace: PROGRESS::"+mProgress + " LENGTH: " + length + " LINE_LENGTH:" + mLineLength);
             return;
         }
 
-        mProgress = (y - mStartYFor) / deltaY;
-
-        Log.d(TAG, "onPlace: PROGRESS_DELTA_Y_CHECK: >1.0f: " + (mProgress > 1.0f) + " <-1.0f: " + (mProgress < -1.0f) + " PROGRESS: " + mProgress);
-
-        if (mProgress > 1.0f) {
-            mProgress = 1.0f;
-            y = mStickY;
-        } else if (mProgress < -1.0f) {
-            mProgress = -1.0f;
-            y = mStickY;
+        if (mIsXBigger) {
+            mStickY = mMarStartY + (x - mMarStartX) / deltaX * deltaY;
+            mStickX = x;
+        } else {
+            mStickX = mMarStartX + (y - mMarStartY) / deltaY * deltaX;
+            mStickY = y;
         }
 
-        Log.d(TAG, "onPlace: PROGRESS_DELTA_Y: " + mProgress + " START_X: " + mStartXFor);
+        float length = (float) Math.hypot(mStartXFor-mStickX, mStartYFor-mStickY);
+        mProgress = length / mLineLength;
+        Log.d(TAG, "onPlace: PROGRESS::"+mProgress + " LENGTH: " + length + " LINE_LENGTH:" + mLineLength);
 
-        mStickX = mStartXFor + mProgress * deltaX;
-        mStickY = y;
     }
 }

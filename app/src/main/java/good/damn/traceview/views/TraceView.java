@@ -152,6 +152,8 @@ public class TraceView extends View implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_UP:
 
+                mCurrentEntityTouch.onTouchUp();
+
                 Log.d(TAG, "onTouch: ACTION_UP: IS_FINISHED: " + mIsFinished);
 
                 if (mIsFinished) {

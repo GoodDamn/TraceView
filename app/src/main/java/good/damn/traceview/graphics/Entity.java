@@ -39,6 +39,11 @@ public abstract class Entity {
 
     protected boolean mHasPivot = false;
 
+    protected boolean boxBound(float x, float y, float curX, float curY) {
+        return curX-mStickBound < x && x < curX+mStickBound &&
+                curY-mStickBound < y && y < curY+mStickBound;
+    }
+
     public Entity() {
         mPaintForeground.setColor(0xff00ff59);
         mPaintForeground.setStrokeWidth(10);
@@ -68,15 +73,6 @@ public abstract class Entity {
     public void setStrokeWidth(byte width) {
         mPaintForeground.setStrokeWidth(width);
         mPaintBackground.setStrokeWidth(width);
-    }
-
-    public boolean checkCollide(float x, float y) {
-        Log.d(TAG, "checkCollide: STICK_X: " + mStickX +
-                " STICK_Y: " + mStickY +
-                " STICK_BOUND: " + mStickBound +
-                " X: " + x + " Y: " + y);
-        return mStickX-mStickBound < x && x < mStickX+mStickBound &&
-                mStickY-mStickBound < y && y < mStickY+mStickBound;
     }
 
     public void reset() {
@@ -121,8 +117,7 @@ public abstract class Entity {
 
     public final byte onTouch(float x, float y) {
         Log.d(TAG, "onTouch: X: " + x + " " + y);
-        if (mStickX-mStickBound < x && x < mStickX+mStickBound &&
-                mStickY-mStickBound < y && y < mStickY+mStickBound) {
+        if (checkDeltaInBounds(x,y)) {
             onPlace(x,y);
             return DRAW_INVALIDATE_WITH_FALSE;
         }
@@ -136,5 +131,10 @@ public abstract class Entity {
 
     public void onSetupPivotPoint(float x, float y){}
 
+    public void onTouchUp(){}
+
+    public abstract boolean checkCollide(float x, float y);
+
     abstract void onPlace(float x, float y);
+    abstract boolean checkDeltaInBounds(float x, float y);
 }

@@ -96,6 +96,16 @@ public class Circle extends Entity {
     }
 
     @Override
+    public boolean checkCollide(float x, float y) {
+        return boxBound(x,y,mStickX,mStickY);
+    }
+
+    @Override
+    boolean checkDeltaInBounds(float x, float y) {
+        return checkCollide(x,y);
+    }
+
+    @Override
     void onPlace(float x, float y) {
         // Shit-code below (mStickX, mStickY, mProgress)
 
