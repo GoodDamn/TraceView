@@ -51,8 +51,8 @@ public class Circle extends Entity {
     }
 
     @Override
-    public void onLayout(int width, int height, float startX, float startY, float endX, float endY) {
-        super.onLayout(width, height, startX, startY, endX, endY);
+    public void onLayout(int width, int height) {
+        super.onLayout(width, height);
         mRadius = (float) Math.hypot(mTraceEndX - mTraceStartX, mTraceEndY - mTraceStartY);
         mStickX = mTraceStartX + mRadius;
         mPivotPointTrigger = mPaintBackground.getStrokeWidth() * 1.5f;

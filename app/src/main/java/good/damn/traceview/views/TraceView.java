@@ -9,10 +9,10 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import good.damn.traceview.animators.VectorAnimator;
 import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.graphics.Line;
 import good.damn.traceview.interfaces.OnTraceFinishListener;
-import good.damn.traceview.utils.models.EntityConfig;
 
 public class TraceView extends View implements View.OnTouchListener {
 
@@ -24,7 +24,7 @@ public class TraceView extends View implements View.OnTouchListener {
 
     private boolean mIsFinished = false;
 
-    private EntityConfig[] mEntityConfigs;
+    private Entity[] mEntities;
 
     private Entity mCurrentEntityTouch;
 
@@ -34,9 +34,8 @@ public class TraceView extends View implements View.OnTouchListener {
             return;
         }
 
-        for (EntityConfig c : mEntityConfigs) {
-            c.entity.onLayout(getWidth(), getHeight(),
-                    c.fromX, c.fromY, c.toX, c.toY);
+        for (Entity e : mEntities) {
+            e.onLayout(getWidth(), getHeight());
         }
     }
 
@@ -60,20 +59,20 @@ public class TraceView extends View implements View.OnTouchListener {
     }
 
     public void restart() {
-        if (mEntityConfigs == null) {
+        if (mEntities == null) {
             throw new IllegalStateException("ARRAY OF LINES IS NULL");
         }
 
-        for (EntityConfig c: mEntityConfigs) {
-            c.entity.reset();
+        for (Entity e: mEntities) {
+            e.reset();
         }
         mIsFinished = false;
         invalidate();
     }
 
-    public void setVectorsSource(EntityConfig[] entityConfigs) {
+    public void setVectorsSource(Entity[] entities) {
         setOnTouchListener(null);
-        mEntityConfigs = entityConfigs;
+        mEntities = entities;
 
         calculate();
 
@@ -85,16 +84,20 @@ public class TraceView extends View implements View.OnTouchListener {
         mOnTraceFinishListener = finishListener;
     }
 
+    public void animate(VectorAnimator vectorAnimator) {
+        vectorAnimator.start();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mEntityConfigs == null) {
+        if (mEntities == null) {
             return;
         }
 
-        for (EntityConfig c : mEntityConfigs) {
-            c.entity.onDraw(canvas);
+        for (Entity c : mEntities) {
+            c.onDraw(canvas);
         }
     }
 
@@ -102,7 +105,7 @@ public class TraceView extends View implements View.OnTouchListener {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (mEntityConfigs == null) {
+        if (mEntities == null) {
             return;
         }
 
@@ -121,15 +124,15 @@ public class TraceView extends View implements View.OnTouchListener {
 
                 mCurrentEntityTouch = null;
 
-                for (EntityConfig c : mEntityConfigs) {
+                for (Entity entity : mEntities) {
 
-                    if (!c.entity.hasPivot()) {
-                        c.entity.onSetupPivotPoint(x,y);
+                    if (!entity.hasPivot()) {
+                        entity.onSetupPivotPoint(x,y);
                         invalidate();
                     }
 
-                    if (c.entity.checkCollide(x,y)) {
-                        mCurrentEntityTouch = c.entity;
+                    if (entity.checkCollide(x,y)) {
+                        mCurrentEntityTouch = entity;
                         break;
                     }
                 }
@@ -162,9 +165,9 @@ public class TraceView extends View implements View.OnTouchListener {
 
                 // Check progress to finish
 
-                for (EntityConfig c : mEntityConfigs) {
-                    Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + c.entity.getProgress());
-                    if (c.entity.getProgress() < COMPLETE_PROGRESS_TRIGGER)
+                for (Entity entity : mEntities) {
+                    Log.d(TAG, "onTouch: MARQUEE_PROGRESS: " + entity.getProgress());
+                    if (entity.getProgress() < COMPLETE_PROGRESS_TRIGGER)
                         return false;
                 }
 

@@ -14,8 +14,8 @@ import java.util.LinkedList;
 
 import good.damn.traceview.fragments.PreviewFragment;
 import good.damn.traceview.fragments.VectorEditorFragment;
+import good.damn.traceview.graphics.editor.EntityEditor;
 import good.damn.traceview.utils.FileUtils;
-import good.damn.traceview.utils.models.EditorConfig;
 import good.damn.traceview.views.BlockedViewPager;
 import good.damn.traceview.views.TraceEditorView;
 
@@ -40,9 +40,9 @@ public class VectorActivity extends AppCompatActivity {
 
         editorFragment.setOnStartClickListener(new TraceEditorView.OnClickIconListener() {
             @Override
-            public void onClick(LinkedList<EditorConfig> editorConfigs) {
+            public void onClick(LinkedList<EntityEditor> entities) {
                 String path = "/dumb.svc";
-                FileUtils.mkSVCFile(editorConfigs,
+                FileUtils.mkSVCFile(entities,
                         path,
                         VectorActivity.this);
                 moveToPos = 1;

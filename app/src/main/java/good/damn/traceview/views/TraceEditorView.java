@@ -16,8 +16,6 @@ import java.util.LinkedList;
 import good.damn.traceview.graphics.editor.CircleEditor;
 import good.damn.traceview.graphics.editor.EntityEditor;
 import good.damn.traceview.graphics.editor.LineEditor;
-import good.damn.traceview.utils.FileUtils;
-import good.damn.traceview.utils.models.EditorConfig;
 
 public class TraceEditorView extends View implements View.OnTouchListener {
 
@@ -26,9 +24,9 @@ public class TraceEditorView extends View implements View.OnTouchListener {
     private final Paint mPaintBackground = new Paint();
     private final Paint mPaintForeground = new Paint();
 
-    private final LinkedList<EditorConfig> mEditorConfigs = new LinkedList<>();
+    private final LinkedList<EntityEditor> mEntities = new LinkedList<>();
 
-    private EntityEditor mEntityEditor;
+    private EntityEditor mEntity;
 
     private OnClickIconListener mOnStartClickListener;
 
@@ -52,7 +50,7 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
         mPaintForeground.setColor(0xff00ff59);
 
-        mEntityEditor = new LineEditor(mPaintForeground, mPaintBackground);
+        mEntity = new LineEditor(mPaintForeground, mPaintBackground);
 
         setOnTouchListener(this);
     }
@@ -78,7 +76,7 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
     public void setLineColor(@ColorInt int color) {
         mPaintForeground.setColor(color);
-        mEntityEditor.setColor(color);
+        mEntity.setColor(color);
     }
 
     @Override
@@ -98,15 +96,17 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
         canvas.drawCircle(0,mCurrentStrokeWidthY, 15, mPaintForeground);
 
-        for (EditorConfig config: mEditorConfigs) { // already places entities
-            float sX = config.fromX*getWidth();
-            float sY = config.fromY*getHeight();
+        for (EntityEditor entity: mEntities) { // already places entities
+            float sX = entity.getStartNormalX() * getWidth();
+            float sY = entity.getStartNormalY() * getHeight();
 
-            config.entityEditor.draw(canvas, sX, sY, config.toX * getWidth(), config.toY*getHeight());
+            entity.draw(canvas, sX, sY,
+                    entity.getEndNormalX() * getWidth(),
+                    entity.getEndNormalY() * getHeight());
         }
 
         // For new placing entity
-        mEntityEditor.draw(canvas,mFromX,mFromY, mToX, mToY);
+        mEntity.draw(canvas,mFromX,mFromY, mToX, mToY);
 
         // Draw icons:
         // Triangle
@@ -128,8 +128,8 @@ public class TraceEditorView extends View implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
 
                 if (event.getX() > getWidth() - 100 && event.getY() < 100) { // Undo previous action
-                    if (mEditorConfigs.size() != 0) {
-                        mEditorConfigs.removeLast();
+                    if (mEntities.size() != 0) {
+                        mEntities.removeLast();
                     }
                     mFromX = 0;
                     mFromY = 0;
@@ -141,17 +141,17 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                 }
 
                 if (event.getX() > 100 && event.getX() < 200 && event.getY() < 100) { // draw circles
-                    mEntityEditor = new CircleEditor(mPaintForeground, mPaintBackground);
+                    mEntity = new CircleEditor(mPaintForeground, mPaintBackground);
                     return false;
                 }
 
                 if (event.getX() > 200 && event.getX() < 300 && event.getY() < 100) { // draw Line
-                    mEntityEditor = new LineEditor(mPaintForeground, mPaintBackground);
+                    mEntity = new LineEditor(mPaintForeground, mPaintBackground);
                     return false;
                 }
 
                 if (event.getX() < 100 && event.getY() < 100) { // start preview mode
-                    mOnStartClickListener.onClick(mEditorConfigs);
+                    mOnStartClickListener.onClick(mEntities);
                     return false;
                 }
 
@@ -169,8 +169,8 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                 if (mDoesStrokeEdit) {
                     float cur = (event.getY() - mMinStrokeWidthY) / (mMaxStrokeWidthY-mMinStrokeWidthY);
                     mCurrentStrokeWidthY = mMinStrokeWidthY + cur * 400;
-                    mEntityEditor.setStrokeWidth((byte) (cur * 127));
-                    Log.d(TAG, "onTouch: STROKE_EDIT: " + mEntityEditor.getStrokeWidth());
+                    mEntity.setStrokeWidth((byte) (cur * 127));
+                    Log.d(TAG, "onTouch: STROKE_EDIT: " + mEntity.getStrokeWidth());
                     invalidate();
                     break;
                 }
@@ -184,15 +184,19 @@ public class TraceEditorView extends View implements View.OnTouchListener {
                     mDoesStrokeEdit = false;
                     break;
                 }
-                EditorConfig config = new EditorConfig(
+
+                EntityEditor entityNew = mEntity.copy();
+
+                entityNew.setStartNormalPoint(
                         mFromX / getWidth(),
-                        mFromY / getHeight(),
+                        mFromY / getHeight());
+
+                entityNew.setEndNormalPoint(
                         mToX / getWidth(),
                         mToY / getHeight());
 
-                config.entityEditor = mEntityEditor.copy();
-                mEditorConfigs.add(config);
-                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEditorConfigs.size());
+                mEntities.add(entityNew);
+                Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEntities.size());
                 break;
         }
 
@@ -200,6 +204,6 @@ public class TraceEditorView extends View implements View.OnTouchListener {
     }
 
     public interface OnClickIconListener {
-        void onClick(LinkedList<EditorConfig> editorConfigs);
+        void onClick(LinkedList<EntityEditor> entities);
     }
 }

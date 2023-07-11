@@ -14,6 +14,11 @@ public abstract class Entity {
     public static final byte DRAW_FALSE = 1;
     public static final byte DRAW_TRUE = 2;
 
+    private float mStartNormalX;
+    private float mStartNormalY;
+    private float mEndNormalX;
+    private float mEndNormalY;
+
     protected final Random mRandom = new Random();
 
     protected final boolean RELEASE_MODE = true;
@@ -22,7 +27,7 @@ public abstract class Entity {
     protected final Paint mPaintBackground = new Paint();
     protected final Paint mPaintDebug = new Paint();
 
-    protected final int mStickBound = 50;
+    protected final int mStickBound = 25;
 
     protected float mTraceStartX = 0;
     protected float mTraceStartY = 0;
@@ -75,6 +80,16 @@ public abstract class Entity {
         mPaintBackground.setStrokeWidth(width);
     }
 
+    public void setStartNormalPoint(float startX, float startY) {
+        mStartNormalX = startX;
+        mStartNormalY = startY;
+    }
+
+    public void setEndNormalPoint(float endX, float endY) {
+        mEndNormalX = endX;
+        mEndNormalY = endY;
+    }
+
     public void reset() {
         mStickX = mTraceStartX;
         mStickY = mTraceStartY;
@@ -84,18 +99,16 @@ public abstract class Entity {
         mProgress = 0;
     }
 
-    public void onLayout(int width, int height,
-                           float startX, float startY,
-                           float endX, float endY) {
+    public void onLayout(int width, int height) {
         Log.d(TAG, "onLayout: Line::onLayout();");
         mWidth = width;
         mHeight = height;
 
-        mTraceStartX = width * startX;
-        mTraceStartY = height * startY;
+        mTraceStartX = width * mStartNormalX;
+        mTraceStartY = height * mStartNormalY;
 
-        mTraceEndX = width * endX;
-        mTraceEndY = height * endY;
+        mTraceEndX = width * mEndNormalX;
+        mTraceEndY = height * mEndNormalY;
 
         mStickX = mTraceStartX;
         mStickY = mTraceStartY;

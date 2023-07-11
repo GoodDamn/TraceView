@@ -1,6 +1,7 @@
 package good.damn.traceview.utils;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -13,16 +14,16 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import good.damn.traceview.graphics.Circle;
+import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.graphics.Line;
 import good.damn.traceview.graphics.editor.CircleEditor;
-import good.damn.traceview.utils.models.EditorConfig;
-import good.damn.traceview.utils.models.EntityConfig;
+import good.damn.traceview.graphics.editor.EntityEditor;
 
 public class FileUtils {
 
     private static final String TAG = "FileUtils";
 
-    public static void mkSVCFile(LinkedList<EditorConfig> entityConfigs,
+    public static void mkSVCFile(LinkedList<EntityEditor> entities,
                                  String path,
                                  Context context) {
 
@@ -37,22 +38,25 @@ public class FileUtils {
 
             fos = new FileOutputStream(file);
 
-            fos.write(entityConfigs.size()); // vectors size
+            fos.write(entities.size()); // vectors size
 
             byte vectorType;
 
-            for (EditorConfig l : entityConfigs) {
+            for (EntityEditor entity : entities) {
                 vectorType = 0; // line by default
-                if (l.entityEditor instanceof CircleEditor) {
+                if (entity instanceof CircleEditor) {
                     vectorType = 1;
                 }
+
                 fos.write(vectorType);
-                fos.write(ByteUtils.fixedPointNumber(l.fromX));
-                fos.write(ByteUtils.fixedPointNumber(l.fromY));
-                fos.write(ByteUtils.fixedPointNumber(l.toX));
-                fos.write(ByteUtils.fixedPointNumber(l.toY));
-                fos.write(ByteUtils.integer(l.entityEditor.getColor()));
-                fos.write(l.entityEditor.getStrokeWidth());
+
+                fos.write(ByteUtils.fixedPointNumber(entity.getStartNormalX()));
+                fos.write(ByteUtils.fixedPointNumber(entity.getStartNormalY()));
+                fos.write(ByteUtils.fixedPointNumber(entity.getEndNormalX()));
+                fos.write(ByteUtils.fixedPointNumber(entity.getEndNormalY()));
+
+                fos.write(ByteUtils.integer(entity.getColor()));
+                fos.write(entity.getStrokeWidth());
             }
 
             fos.close();
@@ -62,57 +66,64 @@ public class FileUtils {
         }
     }
 
-    public static EntityConfig[] retrieveSVCFile(InputStream fis, Context context)
+    public static Entity[] retrieveSVCFile(InputStream fis, Context context)
             throws IOException {
-        EntityConfig[] entityConfigs = null;
+        Entity[] entities = null;
         byte countVectors = (byte) fis.read();
 
         byte[] shortBuffer = new byte[2];
         byte[] intBuffer = new byte[4];
 
-        entityConfigs = new EntityConfig[countVectors];
+        entities = new Entity[countVectors];
 
-        for (byte i = 0; i < entityConfigs.length; i++) {
-            entityConfigs[i] = new EntityConfig();
-            EntityConfig c = entityConfigs[i];
+        float tempX;
+        float tempY;
 
-            byte vectorType = (byte) fis.read();
+        for (byte i = 0; i < entities.length; i++) {
 
-            fis.read(shortBuffer);
-            c.fromX = ByteUtils.fixedPointNumber(shortBuffer);
+            Entity entity;
 
-            fis.read(shortBuffer);
-            c.fromY = ByteUtils.fixedPointNumber(shortBuffer);
-
-            fis.read(shortBuffer);
-            c.toX = ByteUtils.fixedPointNumber(shortBuffer);
-
-            fis.read(shortBuffer);
-            c.toY = ByteUtils.fixedPointNumber(shortBuffer);
-
-            switch (vectorType) {
-                case 0:
-                    c.entity = new Line();
-                    break;
+            switch (fis.read()) {
                 case 1:
-                    c.entity = new Circle();
+                    entity = new Circle();
+                    break;
+                default:
+                    entity = new Line();
                     break;
             }
 
-            fis.read(intBuffer);
-            c.entity.setColor(ByteUtils.integer(intBuffer));
-            Log.d(TAG, "retrieveSVCFile: COLOR: FROM: " + Arrays.toString(intBuffer) + " TO: " + c.entity.getColor());
+            entities[i] = entity;
 
-            c.entity.setStrokeWidth((byte) fis.read());
+            fis.read(shortBuffer);
+            tempX = ByteUtils.fixedPointNumber(shortBuffer);
+
+            fis.read(shortBuffer);
+            tempY = ByteUtils.fixedPointNumber(shortBuffer);
+
+            entity.setStartNormalPoint(tempX, tempY);
+
+            fis.read(shortBuffer);
+            tempX = ByteUtils.fixedPointNumber(shortBuffer);
+
+            fis.read(shortBuffer);
+            tempY = ByteUtils.fixedPointNumber(shortBuffer);
+
+            entity.setEndNormalPoint(tempX,tempY);
+
+            fis.read(intBuffer);
+            entity.setColor(ByteUtils.integer(intBuffer));
+            Log.d(TAG, "retrieveSVCFile: COLOR: FROM: " + Arrays.toString(intBuffer) + " TO: " + entity.getColor());
+
+            entity.setStrokeWidth((byte) fis.read());
 
         }
 
         fis.close();
 
-        return entityConfigs;
+        return entities;
     }
 
-    public static EntityConfig[] retrieveSVCFile(byte[] in, Context context) {
+    public static Entity[] retrieveSVCFile(byte[] in, Context context) {
         try {
             return retrieveSVCFile(new ByteArrayInputStream(in), context);
         } catch (IOException e) {
@@ -121,7 +132,7 @@ public class FileUtils {
         return null;
     }
 
-    public static EntityConfig[] retrieveSVCFile(String path, Context context) {
+    public static Entity[] retrieveSVCFile(String path, Context context) {
         try {
             return retrieveSVCFile(new FileInputStream(context.getCacheDir() + path), context);
         } catch (IOException e) {

@@ -10,6 +10,11 @@ public abstract class EntityEditor {
     protected Paint mPaintBackground = new Paint();
     protected Paint mPaintForeground = new Paint();
 
+    private float mStartNormalX;
+    private float mStartNormalY;
+    private float mEndNormalX;
+    private float mEndNormalY;
+
     public EntityEditor(Paint fore, Paint back) {
         mPaintBackground.setStrokeWidth(back.getStrokeWidth());
         mPaintBackground.setColor(back.getColor());
@@ -25,6 +30,32 @@ public abstract class EntityEditor {
 
     public void setStrokeWidth(byte strokeWidth) {
         mPaintBackground.setStrokeWidth(strokeWidth);
+    }
+
+    public void setStartNormalPoint(float startX, float startY) {
+        mStartNormalX = startX;
+        mStartNormalY = startY;
+    }
+
+    public void setEndNormalPoint(float endX, float endY) {
+        mEndNormalX = endX;
+        mEndNormalY = endY;
+    }
+
+    public float getStartNormalX() {
+        return mStartNormalX;
+    }
+
+    public float getStartNormalY() {
+        return mStartNormalY;
+    }
+
+    public float getEndNormalX() {
+        return mEndNormalX;
+    }
+
+    public float getEndNormalY() {
+        return mEndNormalY;
     }
 
     public int getColor() {

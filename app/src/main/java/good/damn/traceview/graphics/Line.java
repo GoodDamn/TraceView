@@ -38,7 +38,7 @@ public class Line extends Entity {
             canvas.drawLine(mStartXFor, mStartYFor, mStickX, mStickY, mPaintForeground);
         }
 
-        if (!RELEASE_MODE) {
+        if (RELEASE_MODE) {
             return;
         }
 
@@ -64,8 +64,8 @@ public class Line extends Entity {
     }
 
     @Override
-    public void onLayout(int width, int height, float startX, float startY, float endX, float endY) {
-        super.onLayout(width, height, startX, startY, endX, endY);
+    public void onLayout(int width, int height) {
+        super.onLayout(width, height);
         deltaX = mTraceEndX - mTraceStartX;
         deltaY = mTraceEndY - mTraceStartY;
 
