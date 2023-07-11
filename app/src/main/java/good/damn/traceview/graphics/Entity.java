@@ -1,5 +1,6 @@
 package good.damn.traceview.graphics;
 
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
@@ -147,7 +148,9 @@ public abstract class Entity {
     public void onTouchUp(){}
 
     public abstract boolean checkCollide(float x, float y);
+    public abstract void onAnimate(float progress);
 
     abstract void onPlace(float x, float y);
     abstract boolean checkDeltaInBounds(float x, float y);
+
 }

@@ -72,6 +72,9 @@ public class Line extends Entity {
         mStartXFor = mTraceStartX;
         mStartYFor = mTraceStartY;
 
+        mStickX = mStartXFor;
+        mStickY = mStartYFor;
+
         mGradient = deltaY / deltaX;
 
         Log.d(TAG, "onLayout: GRADIENT: " + mGradient);
@@ -85,6 +88,8 @@ public class Line extends Entity {
 
         maxX = Math.max(mTraceStartX, mTraceEndX);
         maxY = Math.max(mTraceStartY, mTraceEndY);
+
+        mHasPivot = true;
     }
 
     @Override
@@ -277,10 +282,15 @@ public class Line extends Entity {
 
         }
 
-
         float length = (float) Math.hypot(mStartXFor-mStickX, mStartYFor-mStickY);
         mProgress = length / mLineLength;
         Log.d(TAG, "onPlace: PROGRESS::"+mProgress + " LENGTH: " + length + " LINE_LENGTH:" + mLineLength);
 
+    }
+
+    @Override
+    public void onAnimate(float progress) {
+        mStickX = mStartXFor + progress * deltaX;
+        mStickY = mStartYFor + progress * deltaY;
     }
 }

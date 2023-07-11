@@ -23,8 +23,8 @@ public class Circle extends Entity {
 
     private float mPivotPointTrigger = 5.0f;
 
+
     public Circle() {
-        super();
         mPaintBackground.setStyle(Paint.Style.STROKE);
         mPaintForeground.setStyle(Paint.Style.STROKE);
     }
@@ -100,6 +100,7 @@ public class Circle extends Entity {
         return boxBound(x,y,mStickX,mStickY);
     }
 
+
     @Override
     boolean checkDeltaInBounds(float x, float y) {
         return checkCollide(x,y);
@@ -136,5 +137,10 @@ public class Circle extends Entity {
         // Rotate stick depend on mAngle on global coordinate system
         mStickX = (float) (mTraceStartX + mRadius*Math.cos(rad));
         mStickY = (float) (mTraceStartY + mRadius*Math.sin(rad));
+    }
+
+    @Override
+    public void onAnimate(float progress) {
+        mProgress = progress;
     }
 }

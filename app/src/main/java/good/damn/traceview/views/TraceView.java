@@ -1,17 +1,20 @@
 package good.damn.traceview.views;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import good.damn.traceview.animators.VectorAnimator;
 import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.graphics.Line;
+import good.damn.traceview.interfaces.OnDrawTracesListener;
 import good.damn.traceview.interfaces.OnTraceFinishListener;
 
 public class TraceView extends View implements View.OnTouchListener {
@@ -21,8 +24,10 @@ public class TraceView extends View implements View.OnTouchListener {
     protected final float COMPLETE_PROGRESS_TRIGGER = 0.95f;
 
     private OnTraceFinishListener mOnTraceFinishListener;
+    private OnDrawTracesListener mOnDrawTracesListener;
 
     private boolean mIsFinished = false;
+    private float mCurrentProgress = 0.0f;
 
     private Entity[] mEntities;
 
@@ -37,9 +42,19 @@ public class TraceView extends View implements View.OnTouchListener {
         for (Entity e : mEntities) {
             e.onLayout(getWidth(), getHeight());
         }
+        startAnimation();
     }
 
     private void init() {
+        mOnDrawTracesListener = new OnDrawTracesListener() {
+            @Override
+            public void onDraw(Canvas canvas) {
+                for (Entity c : mEntities) {
+                    c.onDraw(canvas);
+                }
+            }
+        };
+
         setOnTouchListener(this);
     }
 
@@ -84,8 +99,30 @@ public class TraceView extends View implements View.OnTouchListener {
         mOnTraceFinishListener = finishListener;
     }
 
-    public void animate(VectorAnimator vectorAnimator) {
-        vectorAnimator.start();
+    public void startAnimation() {
+
+        mOnDrawTracesListener = new OnDrawTracesListener() {
+            @Override
+            public void onDraw(Canvas canvas) {
+                for (Entity c : mEntities) {
+                    c.onAnimate(mCurrentProgress);
+                    c.onDraw(canvas);
+                }
+            }
+        };
+
+        ValueAnimator valueAnimator = new ValueAnimator();
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+                mCurrentProgress = valueAnimator.getAnimatedFraction();
+                invalidate();
+            }
+        });
+        valueAnimator.setIntValues(0,1);
+        valueAnimator.setDuration(4000);
+        valueAnimator.setInterpolator(new OvershootInterpolator());
+        valueAnimator.start();
     }
 
     @Override
@@ -96,9 +133,7 @@ public class TraceView extends View implements View.OnTouchListener {
             return;
         }
 
-        for (Entity c : mEntities) {
-            c.onDraw(canvas);
-        }
+        mOnDrawTracesListener.onDraw(canvas);
     }
 
     @Override
