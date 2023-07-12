@@ -143,12 +143,14 @@ public abstract class Entity {
         return mHasPivot;
     }
 
+
     public void onSetupPivotPoint(float x, float y){}
 
     public void onTouchUp(){}
 
     public abstract boolean checkCollide(float x, float y);
     public abstract void onAnimate(float progress);
+    public abstract void onPrepareAnimation();
 
     abstract void onPlace(float x, float y);
     abstract boolean checkDeltaInBounds(float x, float y);

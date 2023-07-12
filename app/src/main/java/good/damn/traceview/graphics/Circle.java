@@ -140,6 +140,11 @@ public class Circle extends Entity {
     }
 
     @Override
+    public void onPrepareAnimation() {
+        mHasPivot = true;
+    }
+
+    @Override
     public void onAnimate(float progress) {
         mProgress = progress;
     }

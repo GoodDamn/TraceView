@@ -88,8 +88,6 @@ public class Line extends Entity {
 
         maxX = Math.max(mTraceStartX, mTraceEndX);
         maxY = Math.max(mTraceStartY, mTraceEndY);
-
-        mHasPivot = true;
     }
 
     @Override
@@ -286,6 +284,11 @@ public class Line extends Entity {
         mProgress = length / mLineLength;
         Log.d(TAG, "onPlace: PROGRESS::"+mProgress + " LENGTH: " + length + " LINE_LENGTH:" + mLineLength);
 
+    }
+
+    @Override
+    public void onPrepareAnimation() {
+        mHasPivot = true;
     }
 
     @Override

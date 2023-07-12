@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,8 @@ import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.views.TraceView;
 
 public abstract class EntityAnimator {
+
+    private static final String TAG = "EntityAnimator";
 
     private final ValueAnimator mAnimator;
     private TraceView mTraceView;
@@ -54,6 +57,18 @@ public abstract class EntityAnimator {
 
     public void setInterpolator(TimeInterpolator interpolator) {
         mAnimator.setInterpolator(interpolator);
+    }
+
+    public void setup() {
+
+        if (mEntities == null) {
+            Log.d(TAG, "setup: YOU NEED TO SETUP Entity[]. CALL setEntities(Entity[]) before setup();");
+            return;
+        }
+
+        for (Entity entity: mEntities) {
+            entity.onPrepareAnimation();
+        }
     }
 
     public void start() {

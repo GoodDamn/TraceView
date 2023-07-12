@@ -20,6 +20,7 @@ import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.graphics.Line;
 import good.damn.traceview.interfaces.OnDrawTracesListener;
 import good.damn.traceview.interfaces.OnTraceFinishListener;
+import good.damn.traceview.models.FileSVC;
 
 public class TraceView extends View implements View.OnTouchListener {
 
@@ -27,10 +28,15 @@ public class TraceView extends View implements View.OnTouchListener {
 
     protected final float COMPLETE_PROGRESS_TRIGGER = 0.95f;
 
+    private Entity[] mEntities;
+    private final OnDrawTracesListener INTERACTIVE_DRAW = canvas -> {
+        for (Entity c : mEntities) {
+            c.onDraw(canvas);
+        }
+    };
+
     private OnTraceFinishListener mOnTraceFinishListener;
     private OnDrawTracesListener mOnDrawTracesListener;
-
-    private Entity[] mEntities;
 
     private Entity mCurrentEntityTouch;
     private EntityAnimator mEntityAnimator;
@@ -46,26 +52,10 @@ public class TraceView extends View implements View.OnTouchListener {
         for (Entity e : mEntities) {
             e.onLayout(getWidth(), getHeight());
         }
-
-        EntityAnimator animator = new ParallelAnimator();
-        animator.setEntities(mEntities);
-        animator.setTraceView(this);
-
-        mOnDrawTracesListener = animator::onUpdateDrawing;
-
-        setAnimator(animator);
-
-        startAnimation();
     }
 
     private void init() {
-        mOnDrawTracesListener = canvas -> {
-            for (Entity c : mEntities) {
-                c.onDraw(canvas);
-            }
-        };
-
-        setOnTouchListener(this);
+        mOnDrawTracesListener = INTERACTIVE_DRAW;
     }
 
     public TraceView(Context context) {
@@ -95,25 +85,44 @@ public class TraceView extends View implements View.OnTouchListener {
         invalidate();
     }
 
-    public void setVectorsSource(Entity[] entities) {
+    public void setVectorsSource(FileSVC fileSVC) {
+
         setOnTouchListener(null);
-        mEntities = entities;
+        mEntities = fileSVC.entities;
+
+        if (fileSVC.isInteractive) {
+            mOnDrawTracesListener = INTERACTIVE_DRAW;
+            setOnTouchListener(this);
+
+            calculate();
+            invalidate();
+            return;
+        }
+
+        if (fileSVC.animator == null) {
+            fileSVC.animator = new ParallelAnimator();
+        }
+
+        mEntityAnimator = fileSVC.animator;
+        mEntityAnimator.setTraceView(this);
+        mEntityAnimator.setEntities(mEntities);
+        mEntityAnimator.setup();
+        mOnDrawTracesListener = canvas -> mEntityAnimator.onUpdateDrawing(canvas);
 
         calculate();
 
-        setOnTouchListener(this);
-        invalidate();
     }
 
     public void setOnTraceFinishListener(OnTraceFinishListener finishListener) {
         mOnTraceFinishListener = finishListener;
     }
 
-    public void setAnimator(EntityAnimator entityAnimator) {
-        mEntityAnimator = entityAnimator;
-    }
-
     public void startAnimation() {
+        if (mEntityAnimator == null) {
+            Log.d(TAG, "startAnimation: ENTITY_ANIMATOR == NULL");
+            return;
+        }
+        
         mEntityAnimator.start();
     }
 
