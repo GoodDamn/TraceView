@@ -118,8 +118,10 @@ public class Line extends Entity {
     @Override
     public void onSetupPivotPoint(float x, float y) {
 
-        if (!(minX < x && x < maxX
-                && minY < y && y < maxY)
+        byte s = (byte) mPaintForeground.getStrokeWidth();
+
+        if (!(minX-s < x && x < maxX+s
+                && minY-s < y && y < maxY+s)
         ) { // Out of bounds
             return;
         }
