@@ -22,7 +22,11 @@ public class ParallelAnimator extends EntityAnimator {
                     entity.onPrepareAnimation();
                 }
             }
-            @Override public void onAnimationEnd(@NonNull Animator animator) {}
+            @Override public void onAnimationEnd(@NonNull Animator animator) {
+                if (mOnTraceFinishListener != null) {
+                    mOnTraceFinishListener.onFinish();
+                }
+            }
             @Override public void onAnimationCancel(@NonNull Animator animator) {}
             @Override public void onAnimationRepeat(@NonNull Animator animator) {}
         });

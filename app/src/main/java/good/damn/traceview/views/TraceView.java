@@ -106,6 +106,7 @@ public class TraceView extends View implements View.OnTouchListener {
         mEntityAnimator = fileSVC.animator;
         mEntityAnimator.setTraceView(this);
         mEntityAnimator.setEntities(mEntities);
+        mEntityAnimator.setOnTraceFinishListener(mOnTraceFinishListener);
         mOnDrawTracesListener = canvas -> mEntityAnimator.onUpdateDrawing(canvas);
 
         calculate();

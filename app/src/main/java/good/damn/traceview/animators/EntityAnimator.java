@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import java.security.cert.CertificateNotYetValidException;
 
 import good.damn.traceview.graphics.Entity;
+import good.damn.traceview.interfaces.OnTraceFinishListener;
 import good.damn.traceview.views.TraceView;
 
 public abstract class EntityAnimator {
@@ -21,7 +22,10 @@ public abstract class EntityAnimator {
     private final ValueAnimator mAnimator;
     private TraceView mTraceView;
 
+    protected OnTraceFinishListener mOnTraceFinishListener;
+
     protected Entity[] mEntities;
+
     protected float mProgress;
 
     public EntityAnimator() {
@@ -39,6 +43,10 @@ public abstract class EntityAnimator {
         });
     }
 
+    protected void addListener(Animator.AnimatorListener listener) {
+        mAnimator.addListener(listener);
+    }
+
     public void setTraceView(TraceView traceView) {
         mTraceView = traceView;
     }
@@ -47,8 +55,8 @@ public abstract class EntityAnimator {
         mEntities = entities;
     }
 
-    protected void addListener(Animator.AnimatorListener listener) {
-        mAnimator.addListener(listener);
+    public void setOnTraceFinishListener(OnTraceFinishListener listener) {
+        mOnTraceFinishListener = listener;
     }
 
     public void setDuration(int duration) {

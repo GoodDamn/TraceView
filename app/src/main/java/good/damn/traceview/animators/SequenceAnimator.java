@@ -24,6 +24,9 @@ public class SequenceAnimator extends EntityAnimator{
             public void onAnimationEnd(@NonNull Animator animator) {
                 mCurrentEntityIndex++;
                 if (mCurrentEntityIndex >= mEntities.length) {
+                    if (mOnTraceFinishListener != null) {
+                        mOnTraceFinishListener.onFinish();
+                    }
                     return;
                 }
 

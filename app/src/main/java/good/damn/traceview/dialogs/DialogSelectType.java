@@ -7,7 +7,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import java.util.LinkedList;
-import java.util.Vector;
 
 import good.damn.traceview.R;
 import good.damn.traceview.activities.VectorActivity;
