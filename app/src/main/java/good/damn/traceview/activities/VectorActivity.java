@@ -14,8 +14,10 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.LinkedList;
 
 import good.damn.traceview.R;
+import good.damn.traceview.dialogs.DialogSelectType;
 import good.damn.traceview.fragments.PreviewFragment;
 import good.damn.traceview.fragments.VectorEditorFragment;
+import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.graphics.editor.EntityEditor;
 import good.damn.traceview.models.FileSVC;
 import good.damn.traceview.utils.FileUtils;
@@ -31,6 +33,29 @@ public class VectorActivity extends AppCompatActivity {
     private BlockedViewPager mViewPager;
     final Runnable mPagerRunnable = () -> mViewPager.setCurrentItem(moveToPos);
 
+    private PreviewFragment mPreviewFragment;
+
+    private DialogSelectType mDialogType;
+
+    public void createFileAndPreview(
+            byte type,
+            byte animator,
+            LinkedList<EntityEditor> entities,
+            Dialog dialog) {
+
+        String path = "/dumb.svc";
+
+        FileUtils.mkSVCFile(entities,
+                type,
+                path,
+                animator,
+                VectorActivity.this);
+        moveToPos = 1;
+        mViewPager.post(mPagerRunnable);
+        mPreviewFragment.startPreview(path);
+        dialog.cancel();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,56 +64,20 @@ public class VectorActivity extends AppCompatActivity {
         mViewPager.setId(ViewCompat.generateViewId());
 
         VectorEditorFragment editorFragment = new VectorEditorFragment();
-        PreviewFragment previewFragment = new PreviewFragment();
+        mPreviewFragment = new PreviewFragment();
+
+        mDialogType = new DialogSelectType(this);
 
         editorFragment.setOnStartClickListener(new TraceEditorView.OnClickIconListener() {
             @Override
             public void onClick(LinkedList<EntityEditor> entities) {
-                String path = "/dumb.svc";
-
-                Dialog dialog = new Dialog(VectorActivity.this);
-                dialog.setContentView(R.layout.dialog_select_file_type);
-                dialog.setCancelable(true);
-
-                dialog.findViewById(R.id.dialog_file_type_interact)
-                        .setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                FileUtils.mkSVCFile(entities,
-                                        FileSVC.TYPE_INTERACTION,
-                                        path,
-                                        VectorActivity.this);
-                                moveToPos = 1;
-                                mViewPager.post(mPagerRunnable);
-                                previewFragment.startPreview(path);
-                                dialog.cancel();
-                            }
-                        });
-
-                dialog.findViewById(R.id.dialog_file_type_animation)
-                        .setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                FileUtils.mkSVCFile(entities,
-                                        FileSVC.TYPE_ANIMATION,
-                                        path,
-                                        VectorActivity.this);
-                                moveToPos = 1;
-                                mViewPager.post(mPagerRunnable);
-                                previewFragment.startPreview(path);
-                                dialog.cancel();
-                            }
-                        });
-
-
-                dialog.show();
-
+                mDialogType.show(entities, VectorActivity.this);
             }
         });
 
         final Fragment[] fragments = new Fragment[]{
                 editorFragment,
-                previewFragment
+                mPreviewFragment
         };
 
         mViewPager.setOffscreenPageLimit(2);

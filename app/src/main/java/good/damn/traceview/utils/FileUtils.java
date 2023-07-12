@@ -26,12 +26,10 @@ public class FileUtils {
 
     private static final String TAG = "FileUtils";
 
-    private static final byte ANIMATOR_PARALLEL = 0;
-    private static final byte ANIMATOR_SEQUENCE = 1;
-
     public static void mkSVCFile(LinkedList<EntityEditor> entities,
                                  byte fileType,
                                  String path,
+                                 byte animator,
                                  Context context) {
 
         FileOutputStream fos;
@@ -47,7 +45,7 @@ public class FileUtils {
 
             byte fileConfig =
                     (byte) ((fileType << 4) // .svc type (0 - interactive, 1 - animation)
-                            | 1); // animator (0 - Parallel, 1 - Sequence)
+                            | animator); // animator (0 - Parallel, 1 - Sequence)
             fos.write(fileConfig);
 
             fos.write(entities.size()); // vectors size
@@ -91,10 +89,10 @@ public class FileUtils {
         fileSVC.isInteractive = svcType == 0;
 
         switch (animationType) {
-            case ANIMATOR_SEQUENCE:
+            case FileSVC.ANIMATOR_SEQUENCE:
                 fileSVC.animator = new SequenceAnimator();
                 break;
-            case ANIMATOR_PARALLEL:
+            case FileSVC.ANIMATOR_PARALLEL:
                 fileSVC.animator = new ParallelAnimator();
                 break;
         }
