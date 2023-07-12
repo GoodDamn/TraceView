@@ -30,6 +30,7 @@ public class FileUtils {
     private static final byte ANIMATOR_SEQUENCE = 1;
 
     public static void mkSVCFile(LinkedList<EntityEditor> entities,
+                                 byte fileType,
                                  String path,
                                  Context context) {
 
@@ -45,8 +46,8 @@ public class FileUtils {
             fos = new FileOutputStream(file);
 
             byte fileConfig =
-                    (0 << 4) // .svc type (0 - interactive, 1 - animation)
-                    | 1; // animator (0 - Parallel, 1 - Sequence)
+                    (byte) ((fileType << 4) // .svc type (0 - interactive, 1 - animation)
+                            | 1); // animator (0 - Parallel, 1 - Sequence)
             fos.write(fileConfig);
 
             fos.write(entities.size()); // vectors size

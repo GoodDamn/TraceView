@@ -59,18 +59,6 @@ public abstract class EntityAnimator {
         mAnimator.setInterpolator(interpolator);
     }
 
-    public void setup() {
-
-        if (mEntities == null) {
-            Log.d(TAG, "setup: YOU NEED TO SETUP Entity[]. CALL setEntities(Entity[]) before setup();");
-            return;
-        }
-
-        for (Entity entity: mEntities) {
-            entity.onPrepareAnimation();
-        }
-    }
-
     public void start() {
         if (mEntities == null) {
             throw new IllegalArgumentException("Entity[] == NULL. YOU NEED TO PASS A REFERENCE to setEntities(Entity[]);");

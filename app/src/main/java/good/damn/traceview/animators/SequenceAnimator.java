@@ -28,6 +28,7 @@ public class SequenceAnimator extends EntityAnimator{
                 }
 
                 mCurrentEntity = mEntities[mCurrentEntityIndex];
+                mCurrentEntity.onPrepareAnimation();
                 SequenceAnimator.super.start();
             }
             @Override public void onAnimationStart(@NonNull Animator animator) {}
@@ -40,6 +41,7 @@ public class SequenceAnimator extends EntityAnimator{
     public void start() {
         mCurrentEntityIndex = 0;
         mCurrentEntity = mEntities[mCurrentEntityIndex];
+        mCurrentEntity.onPrepareAnimation();
         super.start();
     }
 
