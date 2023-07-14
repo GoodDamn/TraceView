@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import java.util.LinkedList;
 
+import good.damn.traceview.graphics.Entity;
 import good.damn.traceview.graphics.editor.CircleEditor;
 import good.damn.traceview.graphics.editor.EntityEditor;
 import good.damn.traceview.graphics.editor.LineEditor;
@@ -191,6 +192,28 @@ public class TraceEditorView extends View implements View.OnTouchListener {
             case MotionEvent.ACTION_UP:
                 if (mDoesStrokeEdit) {
                     mDoesStrokeEdit = false;
+                    break;
+                }
+
+                if (mEntity instanceof RectEditor) {
+                    RectEditor rect = (RectEditor) mEntity;
+                    byte countPoints = (byte) rect.getPoints().length;
+                    for (byte i = 0; i < countPoints; i++) {
+                        float[] p = rect.getPoints()[i];
+                        LineEditor line = new LineEditor(mPaintForeground,mPaintBackground);
+                        line.setStartNormalPoint(
+                                p[0] / getWidth(),
+                                p[1] / getHeight());
+
+                        line.setEndNormalPoint(
+                                p[2] / getWidth(),
+                                p[3] / getHeight()
+                        );
+
+                        mEntities.add(line);
+                    }
+
+                    Log.d(TAG, "onTouch: COUNT OF LINE POS: "+ mEntities.size());
                     break;
                 }
 
