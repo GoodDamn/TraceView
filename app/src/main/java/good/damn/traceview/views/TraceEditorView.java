@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import good.damn.traceview.graphics.editor.CircleEditor;
 import good.damn.traceview.graphics.editor.EntityEditor;
 import good.damn.traceview.graphics.editor.LineEditor;
+import good.damn.traceview.graphics.editor.RectEditor;
 
 public class TraceEditorView extends View implements View.OnTouchListener {
 
@@ -119,6 +120,9 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
         // Line
         canvas.drawLine(225, 75,275,25, mPaintBackground);
+
+        // Rectangle
+        canvas.drawRect(300,25,350,75,mPaintForeground);
     }
 
     @Override
@@ -147,6 +151,11 @@ public class TraceEditorView extends View implements View.OnTouchListener {
 
                 if (event.getX() > 200 && event.getX() < 300 && event.getY() < 100) { // draw Line
                     mEntity = new LineEditor(mPaintForeground, mPaintBackground);
+                    return false;
+                }
+
+                if (event.getX() > 300 && event.getX() < 400 && event.getY() < 100) { // draw Rect
+                    mEntity = new RectEditor(mPaintForeground,mPaintBackground);
                     return false;
                 }
 
