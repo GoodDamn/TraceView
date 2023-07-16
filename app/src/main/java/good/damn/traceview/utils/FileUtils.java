@@ -43,9 +43,9 @@ public class FileUtils {
 
             fos = new FileOutputStream(file);
 
-            byte fileConfig =
-                    (byte) ((fileType << 4) // .svc type (0 - interactive, 1 - animation)
-                            | animator); // animator (0 - Parallel, 1 - Sequence)
+            byte fileConfig = (byte)
+                    ((fileType << 4) // .svc type (0 - interactive, 1 - animation)
+                     | animator); // animator (0 - Parallel, 1 - Sequence)
             fos.write(fileConfig);
 
             fos.write(entities.size()); // vectors size
@@ -67,6 +67,11 @@ public class FileUtils {
 
                 fos.write(ByteUtils.integer(entity.getColor()));
                 fos.write(entity.getStrokeWidth());
+
+                if (fileType == FileSVC.TYPE_ANIMATION) {
+                    Log.d(TAG, "mkSVCFile: DURATION: " + entity.getDuration());
+                    fos.write(ByteUtils.Short((short) entity.getDuration()));
+                }
             }
 
             fos.close();
@@ -146,6 +151,12 @@ public class FileUtils {
 
             entity.setStrokeWidth((byte) fis.read());
 
+            if (fileSVC.isInteractive) {
+                continue;
+            }
+
+            fis.read(shortBuffer);
+            entity.setDuration(ByteUtils.Short(shortBuffer,0));
         }
 
         fis.close();

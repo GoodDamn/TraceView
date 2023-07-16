@@ -15,6 +15,8 @@ public abstract class EntityEditor {
     private float mEndNormalX;
     private float mEndNormalY;
 
+    private int mAnimDuration;
+
     public EntityEditor(Paint fore, Paint back) {
         mPaintBackground.setStrokeWidth(back.getStrokeWidth());
         mPaintBackground.setColor(back.getColor());
@@ -22,6 +24,7 @@ public abstract class EntityEditor {
 
         mPaintForeground.setStrokeCap(Paint.Cap.ROUND);
         mPaintForeground.setColor(fore.getColor());
+        mAnimDuration = 1000; // in millis
     }
 
     public void setColor(@ColorInt int color) {
@@ -42,6 +45,10 @@ public abstract class EntityEditor {
         mEndNormalY = endY;
     }
 
+    public void setDuration(int duration) {
+        mAnimDuration = duration;
+    }
+
     public float getStartNormalX() {
         return mStartNormalX;
     }
@@ -58,6 +65,10 @@ public abstract class EntityEditor {
         return mEndNormalY;
     }
 
+    public int getDuration() {
+        return mAnimDuration;
+    }
+
     public int getColor() {
         return mPaintForeground.getColor();
     }
@@ -65,6 +76,7 @@ public abstract class EntityEditor {
     public byte getStrokeWidth() {
         return (byte) mPaintBackground.getStrokeWidth();
     }
+
 
     public abstract EntityEditor copy();
 

@@ -15,8 +15,6 @@ public class SequenceAnimator extends EntityAnimator{
     private Entity mCurrentEntity;
 
     public SequenceAnimator() {
-
-        setDuration(1500);
         setInterpolator(new LinearInterpolator());
 
         addListener(new Animator.AnimatorListener() {
@@ -32,6 +30,7 @@ public class SequenceAnimator extends EntityAnimator{
 
                 mCurrentEntity = mEntities[mCurrentEntityIndex];
                 mCurrentEntity.onPrepareAnimation();
+                setDuration(mCurrentEntity.getDuration());
                 SequenceAnimator.super.start();
             }
             @Override public void onAnimationStart(@NonNull Animator animator) {}
@@ -45,6 +44,7 @@ public class SequenceAnimator extends EntityAnimator{
         mCurrentEntityIndex = 0;
         mCurrentEntity = mEntities[mCurrentEntityIndex];
         mCurrentEntity.onPrepareAnimation();
+        setDuration(mEntities[0].getDuration());
         super.start();
     }
 

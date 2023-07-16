@@ -12,7 +12,6 @@ import good.damn.traceview.graphics.Entity;
 public class ParallelAnimator extends EntityAnimator {
 
     public ParallelAnimator() {
-        setDuration(2500);
         setInterpolator(new OvershootInterpolator());
 
         addListener(new Animator.AnimatorListener() {
@@ -21,6 +20,7 @@ public class ParallelAnimator extends EntityAnimator {
                 for (Entity entity: mEntities) {
                     entity.onPrepareAnimation();
                 }
+                setDuration(mEntities[0].getDuration());
             }
             @Override public void onAnimationEnd(@NonNull Animator animator) {
                 if (mOnTraceFinishListener != null) {
